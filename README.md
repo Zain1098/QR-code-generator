@@ -26,5 +26,5 @@ The QR Code is generated using the [QR Server API](https://qrserver.com) with th
 Clone the repository and open the `index.html` file in your web browser.
 
 ```bash
-git clone https://github.com/your-username/qr-code-generator.git
+git remote add origin https://github.com/Zain1098/QR-code-generator.git
 cd qr-code-generator
