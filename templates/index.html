@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>QR Code Generator</h1>
+            <p>Generate custom QR codes with colors</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <input type="text" id="textInput" placeholder="Enter text, URL, or any data" maxlength="2000">
+                
+                <div class="control-group">
+                    <label>Size</label>
+                    <select id="sizeSelect" class="custom-select">
+                        <option value="200">Small</option>
+                        <option value="300" selected>Medium</option>
+                        <option value="400">Large</option>
+                    </select>
+                </div>
+                
+                <div class="color-controls">
+                    <div class="control-group">
+                        <label>Foreground</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="fgColor" value="#000000">
+                            <span class="color-label">#000000</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Background</label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="bgColor" value="#ffffff">
+                            <span class="color-label">#ffffff</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preset-colors">
+                    <button class="preset-btn" data-fg="#000000" data-bg="#ffffff">Classic</button>
+                    <button class="preset-btn" data-fg="#4F46E5" data-bg="#EEF2FF">Blue</button>
+                    <button class="preset-btn" data-fg="#DC2626" data-bg="#FEE2E2">Red</button>
+                    <button class="preset-btn" data-fg="#059669" data-bg="#D1FAE5">Green</button>
+                </div>
+                
+                <button id="generateBtn" class="generate-btn">
+                    <span class="btn-text">Generate QR Code</span>
+                    <div class="btn-loader" style="display: none;"></div>
+                </button>
+                
+                <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
+            </div>
+            
+            <div class="right-panel">
+                <div class="qr-section" id="qrSection">
+                    <div class="qr-container">
+                        <div id="qrcode"></div>
+                    </div>
+                    <div class="qr-actions">
+                        <button id="downloadBtn" class="action-btn download-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Download
+                        </button>
+                        <button id="copyBtn" class="action-btn copy-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="placeholder" id="placeholder">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    <p>Enter text and click Generate</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage" style="display: none;"></div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
