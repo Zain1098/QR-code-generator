@@ -1,0 +1,12 @@
+export { UrlForm } from './url-form';
+export { TextForm } from './text-form';
+export { WifiForm } from './wifi-form';
+export { VCardForm } from './vcard-form';
+export { EmailForm } from './email-form';
+export { PhoneForm } from './phone-form';
+export { SmsForm } from './sms-form';
+export { WhatsappForm } from './whatsapp-form';
+export { LocationForm } from './location-form';
+export { EventForm } from './event-form';
+export { SocialForm } from './social-form';
+export { PaymentForm } from './payment-form';
