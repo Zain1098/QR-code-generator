@@ -1,9 +1,29 @@
 'use client';
 
-import React from 'react';
-import { Check, Info, ShieldCheck, Zap, Layers } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, Info, ShieldCheck, Zap, Layers, Sparkles, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function BillingPage() {
+  const [activePlan, setActivePlan] = useState('Free Atelier');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('formqr_active_tier');
+      if (saved) setActivePlan(saved);
+    }
+  }, []);
+
+  const handleSelectTier = (planName: string) => {
+    if (planName === activePlan) return;
+
+    setActivePlan(planName);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('formqr_active_tier', planName);
+    }
+    toast.success(`Entitlements updated: ${planName} is now active.`);
+  };
+
   const plans = [
     {
       name: 'Free Atelier',
@@ -17,9 +37,7 @@ export default function BillingPage() {
         'ISO 18004 Compliant Vector Export',
         'Community Support Registry'
       ],
-      current: true,
-      buttonText: 'Active Tier',
-      highlighted: false,
+      quota: '3 Matrices / 100 Scans mo.',
     },
     {
       name: 'Studio Pro',
@@ -34,9 +52,7 @@ export default function BillingPage() {
         '7-Day Scan Sensor Telemetry',
         'Direct Vector SVG & EPS Archive'
       ],
-      current: false,
-      buttonText: 'Upgrade To Studio Pro',
-      highlighted: true,
+      quota: 'Unlimited Static / 10 Dynamic / Unlimited Scans',
     },
     {
       name: 'Enterprise Matrix',
@@ -51,9 +67,7 @@ export default function BillingPage() {
         'Bulk Batch Importer & Zip Engine',
         'Multi-Seat Operator Collaboration'
       ],
-      current: false,
-      buttonText: 'Contact Atelier Team',
-      highlighted: false,
+      quota: 'Infinite Batching / Dedicated Routing / SLA',
     }
   ];
 
@@ -77,66 +91,83 @@ export default function BillingPage() {
         </div>
 
         <div className="inline-flex items-center gap-2 border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-surface px-3 py-1.5 font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
-          <Info className="w-3.5 h-3.5" />
-          <span>STRIPE GATEWAY DISPATCH PENDING</span>
+          <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+          <span>ACTIVE TIER: {activePlan.toUpperCase()}</span>
         </div>
       </div>
 
       {/* Plan Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan) => (
-          <div 
-            key={plan.name} 
-            className={`relative bg-surface-workbench dark:bg-dark-surface border flex flex-col rounded-none transition-colors ${
-              plan.highlighted 
-                ? 'border-ink-primary dark:border-dark-ink-primary ring-1 ring-ink-primary dark:ring-dark-ink-primary' 
-                : 'border-border-hairpin dark:border-dark-border'
-            } p-6 sm:p-8`}
-          >
-            {plan.highlighted && (
-              <div className="absolute top-0 right-0 bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
-                RECOMMENDED SPEC
-              </div>
-            )}
-            
-            <div className="mb-6">
-              <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
-                {plan.code}
-              </span>
-              <h3 className="font-mono text-xl font-bold uppercase text-ink-primary dark:text-dark-ink-primary mt-1 mb-2">
-                {plan.name}
-              </h3>
-              <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans min-h-[36px] leading-relaxed">
-                {plan.description}
-              </p>
-            </div>
-            
-            <div className="mb-6 pb-6 border-b border-border-hairpin dark:border-dark-border flex items-baseline gap-1">
-              <span className="font-mono text-4xl font-bold text-ink-primary dark:text-dark-ink-primary">{plan.price}</span>
-              <span className="font-mono text-xs text-ink-muted dark:text-dark-ink-muted uppercase">{plan.period}</span>
-            </div>
-            
-            <ul className="space-y-3 mb-8 flex-1">
-              {plan.features.map((feature, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 mt-1.5 shrink-0 inline-block"></span>
-                  <span className="text-xs text-ink-primary dark:text-dark-ink-primary font-mono">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <button 
-              disabled={plan.current || true}
-              className={`w-full py-3 px-4 rounded-none font-mono text-xs uppercase tracking-wider font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                plan.highlighted
-                  ? 'bg-ink-primary text-white hover:bg-black dark:bg-dark-ink-primary dark:text-dark-canvas dark:hover:bg-white'
-                  : 'border border-border-hairpin dark:border-dark-border text-ink-primary dark:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-panel'
-              }`}
+        {plans.map((plan) => {
+          const isCurrent = activePlan === plan.name;
+          const isPro = plan.name === 'Studio Pro';
+
+          return (
+            <div 
+              key={plan.name} 
+              className={`relative bg-surface-workbench dark:bg-dark-surface border flex flex-col rounded-none transition-all ${
+                isCurrent
+                  ? 'border-emerald-600 ring-1 ring-emerald-600 shadow-sm' 
+                  : isPro
+                  ? 'border-ink-primary dark:border-dark-ink-primary'
+                  : 'border-border-hairpin dark:border-dark-border'
+              } p-6 sm:p-8`}
             >
-              {plan.buttonText}
-            </button>
-          </div>
-        ))}
+              {isCurrent && (
+                <div className="absolute top-0 right-0 bg-emerald-600 text-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  CURRENT ACTIVE
+                </div>
+              )}
+              
+              {!isCurrent && isPro && (
+                <div className="absolute top-0 right-0 bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest">
+                  RECOMMENDED
+                </div>
+              )}
+              
+              <div className="mb-6">
+                <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+                  {plan.code}
+                </span>
+                <h3 className="font-mono text-xl font-bold uppercase text-ink-primary dark:text-dark-ink-primary mt-1 mb-2">
+                  {plan.name}
+                </h3>
+                <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans min-h-[36px] leading-relaxed">
+                  {plan.description}
+                </p>
+              </div>
+              
+              <div className="mb-6 pb-6 border-b border-border-hairpin dark:border-dark-border flex items-baseline gap-1">
+                <span className="font-mono text-4xl font-bold text-ink-primary dark:text-dark-ink-primary">{plan.price}</span>
+                <span className="font-mono text-xs text-ink-muted dark:text-dark-ink-muted uppercase">{plan.period}</span>
+              </div>
+              
+              <ul className="space-y-3 mb-8 flex-1">
+                {plan.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 mt-1.5 shrink-0 inline-block"></span>
+                    <span className="text-xs text-ink-primary dark:text-dark-ink-primary font-mono">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              
+              <button 
+                onClick={() => handleSelectTier(plan.name)}
+                disabled={isCurrent}
+                className={`w-full py-3 px-4 rounded-none font-mono text-xs uppercase tracking-wider font-semibold transition-colors ${
+                  isCurrent
+                    ? 'border border-emerald-600 text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 cursor-default'
+                    : isPro
+                    ? 'bg-ink-primary text-white hover:bg-black dark:bg-dark-ink-primary dark:text-dark-canvas dark:hover:bg-white'
+                    : 'border border-border-hairpin dark:border-dark-border text-ink-primary dark:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-panel'
+                }`}
+              >
+                {isCurrent ? 'Active Calibration' : `Select ${plan.name}`}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -42,22 +42,33 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     async function getUser() {
+      if (typeof window !== 'undefined') {
+        const customName = localStorage.getItem('formqr_operator_name');
+        if (customName) {
+          setUserName(customName);
+        }
+      }
+
       if (typeof document !== 'undefined' && document.cookie.includes('demo_guest=true')) {
-        setUserName('Guest Operator');
+        const customName = typeof window !== 'undefined' ? localStorage.getItem('formqr_operator_name') : null;
+        setUserName(customName || 'Guest Operator');
         setUserEmail('guest@formqr.studio');
         return;
       }
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          setUserName(user.user_metadata?.full_name || 'User');
+          const customName = typeof window !== 'undefined' ? localStorage.getItem('formqr_operator_name') : null;
+          setUserName(customName || user.user_metadata?.full_name || 'User');
           setUserEmail(user.email || '');
         } else {
-          setUserName('Guest Operator');
+          const customName = typeof window !== 'undefined' ? localStorage.getItem('formqr_operator_name') : null;
+          setUserName(customName || 'Guest Operator');
           setUserEmail('guest@formqr.studio');
         }
       } catch {
-        setUserName('Guest Operator');
+        const customName = typeof window !== 'undefined' ? localStorage.getItem('formqr_operator_name') : null;
+        setUserName(customName || 'Guest Operator');
         setUserEmail('guest@formqr.studio');
       }
     }

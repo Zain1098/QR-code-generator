@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, Copy, Check, Image, FileCode, FileImage } from 'lucide-react';
+import { Download, Copy, Check, Image, FileCode, FileImage, BookmarkPlus, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { saveLocalMatrix } from '@/lib/matrix-storage';
+import Link from 'next/link';
 
 interface QRExportProps {
   qrContainerRef: React.RefObject<HTMLDivElement | null>;
   hasQR: boolean;
+  qrData?: string;
+  qrType?: string;
+  customization?: any;
 }
 
 type ExportFormat = 'png' | 'svg' | 'webp';
@@ -24,12 +29,68 @@ const FORMAT_INFO: Record<ExportFormat, { icon: React.ReactNode; label: string; 
   webp: { icon: <FileImage className="w-4 h-4" />, label: 'WebP', description: 'Smaller file size' },
 };
 
-export function QRExport({ qrContainerRef, hasQR }: QRExportProps) {
+export function QRExport({ qrContainerRef, hasQR, qrData, qrType = 'url', customization }: QRExportProps) {
   const [format, setFormat] = useState<ExportFormat>('png');
   const [size, setSize] = useState(1024);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [archived, setArchived] = useState(false);
+
+  const handleArchive = async () => {
+    if (!qrData) {
+      toast.error('No matrix payload available to archive');
+      return;
+    }
+
+    setIsArchiving(true);
+    try {
+      const specimenName = `${qrType.toUpperCase()} Specimen #${Math.floor(100 + Math.random() * 900)}`;
+      const newMatrix = saveLocalMatrix({
+        name: specimenName,
+        qr_type: qrType,
+        is_dynamic: true,
+        content: qrData,
+        destination_url: qrData.startsWith('http') ? qrData : undefined,
+        customization,
+        status: 'active',
+      });
+
+      // Also attempt server sync via /api/qr
+      try {
+        await fetch('/api/qr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: specimenName,
+            qr_type: qrType,
+            is_dynamic: true,
+            content: qrData,
+            destination_url: qrData.startsWith('http') ? qrData : undefined,
+            customization,
+          }),
+        });
+      } catch {
+        // Local persistence already succeeded
+      }
+
+      setArchived(true);
+      toast.success('Matrix specimen archived to Operator Desk registry!', {
+        action: {
+          label: 'View in Ledger',
+          onClick: () => {
+            window.location.href = '/dashboard/qr-codes';
+          },
+        },
+      });
+      setTimeout(() => setArchived(false), 3000);
+    } catch (err: any) {
+      toast.error(`Failed to archive matrix: ${err.message || 'Error'}`);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   const getQRInstance = () => {
     if (qrContainerRef.current) {
@@ -229,13 +290,42 @@ export function QRExport({ qrContainerRef, hasQR }: QRExportProps) {
         </div>
       </div>
 
+      {/* Save to Workbench Ledger Action */}
+      <div className="pt-1">
+        <button
+          type="button"
+          onClick={handleArchive}
+          disabled={isArchiving}
+          className="w-full h-10 border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-panel hover:bg-print-bed dark:hover:bg-dark-surface text-ink-primary dark:text-dark-ink-primary font-mono text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+        >
+          {archived ? (
+            <>
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-emerald-700 dark:text-emerald-400">Specimen Archived In Ledger</span>
+            </>
+          ) : isArchiving ? (
+            <>
+              <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <span>Archiving Specimen...</span>
+            </>
+          ) : (
+            <>
+              <BookmarkPlus className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted" />
+              <span>Archive Specimen To Operator Desk</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Optical Scannability Verification Ledger */}
       <div className="flex items-center justify-between px-2.5 py-1.5 bg-print-bed/80 dark:bg-dark-surface/80 rounded border border-border-hairpin dark:border-dark-border text-ink-muted dark:text-dark-ink-muted text-[11px] font-mono">
         <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
           <span>OPTICAL CERTIFIED</span>
         </div>
-        <span>MIN SCALE: 20MM</span>
+        <Link href="/dashboard/qr-codes" className="hover:underline flex items-center gap-1 text-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary">
+          <span>Open Matrix Ledger &rarr;</span>
+        </Link>
       </div>
     </div>
   );

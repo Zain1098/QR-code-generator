@@ -79,6 +79,64 @@ export default function CreatePage() {
   const [copiedQuick, setCopiedQuick] = useState(false);
   const qrContainerRef = useRef<HTMLDivElement>(null);
 
+  // Check URL query params for template deployment
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const template = params.get('template') || params.get('type');
+    if (!template) return;
+
+    if (template === 'wifi') {
+      setSelectedType('wifi');
+      setFormData({ ssid: 'ATELIER_5G_GUEST', password: 'bauhaus_craft_1919', encryption: 'WPA' });
+      toast.success('Deployed Blueprint: Studio Wi-Fi Key');
+    } else if (template === 'vcard' || template === 'contact') {
+      setSelectedType('vcard');
+      setFormData({
+        firstName: 'Elena',
+        lastName: 'Vogel',
+        organization: 'Atelier Form Studio',
+        title: 'Lead Typographer',
+        phone: '+49 30 555 0192',
+        email: 'elena@formqr.studio',
+        url: 'https://formqr.studio',
+      });
+      toast.success('Deployed Blueprint: Architect vCard');
+    } else if (template === 'event') {
+      setSelectedType('event');
+      setFormData({
+        title: 'Atelier Vernissage 2026',
+        location: 'Kupfergraben 4, 10117 Berlin',
+        startDate: '2026-10-15T18:00',
+        endDate: '2026-10-15T23:00',
+      });
+      toast.success('Deployed Blueprint: Exhibition Vernissage');
+    } else if (template === 'social') {
+      setSelectedType('social');
+      setFormData({
+        platform: 'instagram',
+        username: 'formqr.studio',
+      });
+      toast.success('Deployed Blueprint: Curated Dossier');
+    } else if (template === 'menu') {
+      setSelectedType('url');
+      setFormData({ url: 'https://carte.atelier-studio.design/autumn-2026' });
+      toast.success('Deployed Blueprint: Culinary Menu');
+    } else if (template === 'product') {
+      setSelectedType('url');
+      setFormData({ url: 'https://registry.formqr.studio/specimen/042' });
+      toast.success('Deployed Blueprint: Artifact Catalog');
+    } else if (template === 'payment') {
+      setSelectedType('payment');
+      setFormData({
+        paymentType: 'paypal',
+        account: 'finance@formqr.studio',
+        amount: '120.00',
+      });
+      toast.success('Deployed Blueprint: Remittance Rail');
+    }
+  }, []);
+
   // Generate QR data string from form data
   const qrData = useMemo(() => {
     try {
@@ -435,7 +493,13 @@ export default function CreatePage() {
 
             {/* Export & Transmission Suite */}
             <div className="w-full mt-4">
-              <QRExport qrContainerRef={qrContainerRef} hasQR={!!qrData} />
+              <QRExport 
+                qrContainerRef={qrContainerRef} 
+                hasQR={!!qrData} 
+                qrData={qrData}
+                qrType={selectedType}
+                customization={customization}
+              />
             </div>
           </section>
         </div>

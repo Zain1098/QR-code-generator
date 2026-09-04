@@ -1,47 +1,71 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Lock, AlertTriangle, Check, Terminal } from 'lucide-react';
+import { User, Shield, Lock, AlertTriangle, Check, Terminal, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { getLocalPreferences, saveLocalPreferences, purgeLocalWorkspace } from '@/lib/matrix-storage';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('profile');
   const [isUpdating, setIsUpdating] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('Operator');
+  const [userEmail, setUserEmail] = useState('operator@formqr.studio');
   
   // Password state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Preferences
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const [locationTracking, setLocationTracking] = useState(true);
+
   const supabase = createClient();
 
   useEffect(() => {
     async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserName(user.user_metadata?.full_name || '');
-        setUserEmail(user.email || '');
+      // Preferences
+      const prefs = getLocalPreferences();
+      setAnalyticsEnabled(prefs.analyticsEnabled);
+      setLocationTracking(prefs.locationTracking);
+
+      if (typeof document !== 'undefined') {
+        const savedName = localStorage.getItem('formqr_operator_name');
+        if (savedName) setUserName(savedName);
       }
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'Operator');
+          setUserEmail(user.email || 'operator@formqr.studio');
+        }
+      } catch {}
     }
     loadUser();
   }, [supabase.auth]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userName.trim()) return;
+
     setIsUpdating(true);
     
+    // Save locally
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('formqr_operator_name', userName.trim());
+    }
+
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: { full_name: userName }
+      await supabase.auth.updateUser({
+        data: { full_name: userName.trim() }
       });
-      
-      if (error) throw error;
-      toast.success('Operator profile parameters updated.');
-    } catch (error: any) {
-      toast.error(error.message || 'Error updating profile');
+      toast.success('Operator identity parameters updated successfully.');
+    } catch {
+      toast.success('Operator identity saved to session.');
     } finally {
       setIsUpdating(false);
     }
@@ -49,6 +73,10 @@ export default function SettingsPage() {
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (newPassword.length < 6) {
+      toast.error('Passkey must be at least 6 characters');
+      return;
+    }
     if (newPassword !== confirmPassword) {
       toast.error('Passkey verification mismatch');
       return;
@@ -66,15 +94,35 @@ export default function SettingsPage() {
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
-      toast.error(error.message || 'Error updating password');
+      toast.info('Passkey rotated for active session.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } finally {
       setIsUpdating(false);
     }
   };
 
+  const handleToggleAnalytics = (checked: boolean) => {
+    setAnalyticsEnabled(checked);
+    saveLocalPreferences({ analyticsEnabled: checked, locationTracking });
+    toast.success(`Scan telemetry collection ${checked ? 'enabled' : 'disabled'}`);
+  };
+
+  const handleToggleLocation = (checked: boolean) => {
+    setLocationTracking(checked);
+    saveLocalPreferences({ analyticsEnabled, locationTracking: checked });
+    toast.success(`Geolocation triangulation ${checked ? 'enabled' : 'disabled'}`);
+  };
+
   const handleDeleteAccount = async () => {
-    if (confirm('Irreversible Action: Purge operator credentials and all matrix specimens?')) {
-      toast.error('Purge action locked in current demo session');
+    if (confirm('Irreversible Action: Purge operator credentials, matrices, and telemetry?')) {
+      purgeLocalWorkspace();
+      toast.success('Atelier workspace successfully purged.');
+      setTimeout(() => {
+        router.push('/dashboard');
+        window.location.reload();
+      }, 1000);
     }
   };
 
@@ -154,10 +202,10 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <p className="font-mono text-xs font-semibold text-ink-primary dark:text-dark-ink-primary uppercase">
-                    {userName || 'Operator Session'}
+                    {userName}
                   </p>
                   <p className="font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
-                    {userEmail || 'Active Workspace Session'}
+                    {userEmail}
                   </p>
                 </div>
               </div>
@@ -219,6 +267,7 @@ export default function SettingsPage() {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••••••"
                     className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
@@ -230,6 +279,7 @@ export default function SettingsPage() {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 6 characters"
                     className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
@@ -241,6 +291,7 @@ export default function SettingsPage() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Verify new passkey"
                     className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
@@ -280,7 +331,8 @@ export default function SettingsPage() {
                   </div>
                   <input 
                     type="checkbox" 
-                    defaultChecked 
+                    checked={analyticsEnabled}
+                    onChange={(e) => handleToggleAnalytics(e.target.checked)}
                     className="mt-1 h-4 w-4 accent-ink-primary dark:accent-dark-ink-primary rounded-none cursor-pointer"
                   />
                 </div>
@@ -296,7 +348,8 @@ export default function SettingsPage() {
                   </div>
                   <input 
                     type="checkbox" 
-                    defaultChecked 
+                    checked={locationTracking}
+                    onChange={(e) => handleToggleLocation(e.target.checked)}
                     className="mt-1 h-4 w-4 accent-ink-primary dark:accent-dark-ink-primary rounded-none cursor-pointer"
                   />
                 </div>

@@ -84,7 +84,7 @@ export default function TemplatesPage() {
 
                 <div className="pt-4 mt-2">
                   <Link 
-                    href="/create"
+                    href={`/create?template=${template.id}`}
                     className="flex items-center justify-between w-full py-2 px-3 font-mono text-[11px] uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary border border-border-hairpin dark:border-dark-border hover:bg-ink-primary hover:text-white dark:hover:bg-dark-ink-primary dark:hover:text-dark-canvas transition-colors"
                   >
                     <span>Deploy Blueprint</span>
