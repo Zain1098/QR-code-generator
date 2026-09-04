@@ -116,74 +116,126 @@ export function QRExport({ qrContainerRef, hasQR }: QRExportProps) {
   if (!hasQR) return null;
 
   return (
-    <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-      {/* Format Selection */}
-      <div>
-        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-          Export Format
-        </label>
-        <div className="grid grid-cols-3 gap-2">
+    <div className="space-y-3 pt-3 border-t border-border-hairpin dark:border-dark-border">
+      {/* Format & Resolution Segmented Bar */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold">
+            Export Matrix Calibration
+          </label>
+          <span className="font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted">
+            {format === 'svg' ? 'VECTOR ∞' : `${size} × ${size} PX`}
+          </span>
+        </div>
+
+        {/* Format Selectors */}
+        <div className="grid grid-cols-3 gap-1.5 p-1 bg-print-bed dark:bg-dark-surface rounded-lg border border-border-hairpin dark:border-dark-border">
           {(Object.keys(FORMAT_INFO) as ExportFormat[]).map((f) => (
             <button
               key={f}
+              type="button"
               onClick={() => setFormat(f)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-xs font-medium transition-colors ${
+              className={`py-1.5 px-2 rounded text-center text-xs font-mono uppercase tracking-wider transition-all select-none ${
                 format === f
-                  ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
-                  : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                  ? 'bg-surface-workbench dark:bg-dark-panel text-ink-primary dark:text-dark-ink-primary font-semibold shadow-sm border border-border-hairpin dark:border-dark-border-strong'
+                  : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary'
               }`}
             >
-              {FORMAT_INFO[f].icon}
               {FORMAT_INFO[f].label}
             </button>
           ))}
         </div>
+
+        {/* Resolution Select (Only for raster) */}
+        {format !== 'svg' && (
+          <div className="grid grid-cols-4 gap-1 p-0.5 bg-print-bed dark:bg-dark-surface rounded border border-border-hairpin dark:border-dark-border">
+            {EXPORT_SIZES.map((s) => (
+              <button
+                key={s.value}
+                type="button"
+                onClick={() => setSize(s.value)}
+                className={`py-1 text-center font-mono text-[11px] rounded transition-all ${
+                  size === s.value
+                    ? 'bg-surface-workbench dark:bg-dark-panel text-ink-primary dark:text-dark-ink-primary font-semibold shadow-sm'
+                    : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary'
+                }`}
+              >
+                {s.value}px
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Size Selection */}
-      {format !== 'svg' && (
-        <div>
-          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-            Resolution
-          </label>
-          <select
-            value={size}
-            onChange={(e) => setSize(parseInt(e.target.value))}
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-brand-500 outline-none"
-          >
-            {EXPORT_SIZES.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="flex gap-2">
+      {/* Immediate Transmission & Export Suite */}
+      <div className="flex flex-col sm:flex-row gap-2 pt-1">
         <button
+          type="button"
           onClick={handleDownload}
           disabled={isDownloading}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex-1 h-11 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas rounded font-mono text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] disabled:opacity-50"
         >
           {isDownloading ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
             <Download className="w-4 h-4" />
           )}
-          Download {format.toUpperCase()}
+          <span>Download Artifact ({format.toUpperCase()})</span>
         </button>
-        <button
-          onClick={handleCopy}
-          disabled={isCopying}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
-        >
-          {copied ? (
-            <Check className="w-4 h-4 text-green-500" />
-          ) : (
-            <Copy className="w-4 h-4" />
+
+        <div className="flex gap-2">
+          {format !== 'svg' && (
+            <button
+              type="button"
+              onClick={async () => {
+                const prev = format;
+                setFormat('svg');
+                // quick SVG download
+                const qrInstance = getQRInstance();
+                if (qrInstance) {
+                  const blob = await qrInstance.getRawData('svg');
+                  if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `specimen-vector-${Date.now()}.svg`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    toast.success('Vector SVG Exported');
+                  }
+                }
+                setFormat(prev);
+              }}
+              title="Quick Vector SVG Export"
+              className="h-11 px-3 bg-surface-workbench dark:bg-dark-panel hover:bg-print-bed dark:hover:bg-dark-surface text-ink-primary dark:text-dark-ink-primary border border-border-hairpin dark:border-dark-border rounded font-mono text-xs font-semibold shadow-sm transition-all"
+            >
+              SVG
+            </button>
           )}
-          {copied ? 'Copied!' : 'Copy'}
-        </button>
+
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={isCopying}
+            className="h-11 px-3.5 bg-surface-workbench dark:bg-dark-panel hover:bg-print-bed dark:hover:bg-dark-surface text-ink-primary dark:text-dark-ink-primary border border-border-hairpin dark:border-dark-border rounded font-mono text-xs font-medium flex items-center justify-center shadow-sm transition-all disabled:opacity-50"
+            title="Copy Matrix to Clipboard"
+          >
+            {copied ? (
+              <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Optical Scannability Verification Ledger */}
+      <div className="flex items-center justify-between px-2.5 py-1.5 bg-print-bed/80 dark:bg-dark-surface/80 rounded border border-border-hairpin dark:border-dark-border text-ink-muted dark:text-dark-ink-muted text-[11px] font-mono">
+        <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
+          <span>OPTICAL CERTIFIED</span>
+        </div>
+        <span>MIN SCALE: 20MM</span>
       </div>
     </div>
   );

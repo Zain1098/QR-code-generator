@@ -2,110 +2,126 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Menu, X, Sun, Moon, QrCode } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
-  // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
+    { name: 'Atelier (Generator)', href: '/create' },
+    { name: 'Press Specs', href: '/#press-specs' },
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },
-    { name: 'Create QR Code', href: '/create' },
   ];
 
+  const isDark = mounted && theme === 'dark';
+
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/75 dark:bg-gray-950/75 border-b border-gray-200 dark:border-gray-800 transition-colors">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-canvas-paper/95 dark:bg-dark-canvas/95 backdrop-blur-md border-b border-border-hairpin dark:border-dark-border transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <QrCode className="w-8 h-8 text-brand-600 dark:text-brand-500 group-hover:rotate-12 transition-transform duration-300" />
-              <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
-                {process.env.NEXT_PUBLIC_APP_NAME || 'QRForge'}
-              </span>
+        <div className="flex justify-between items-center h-14">
+          {/* Logo Mark & Nav */}
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2 select-none group">
+              <span className="w-2.5 h-2.5 bg-ink-primary dark:bg-dark-ink-primary rounded-none inline-block transition-transform group-hover:scale-110"></span>
+              <span className="font-mono text-sm font-semibold tracking-wider text-ink-primary dark:text-dark-ink-primary">FORM</span>
+              <span className="text-ink-muted dark:text-dark-ink-muted font-mono text-sm">//</span>
+              <span className="font-mono text-sm tracking-widest text-ink-muted dark:text-dark-ink-muted">QR</span>
             </Link>
+
+            <div className="h-4 w-hairpin bg-border-hairpin dark:bg-dark-border hidden md:block"></div>
+
+            <nav className="hidden md:flex items-center gap-6">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'text-ink-primary dark:text-dark-ink-primary border-b-2 border-ink-primary dark:border-dark-ink-primary pb-1 font-semibold'
+                        : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex space-x-8 items-center">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+          {/* Right Side Controls */}
+          <div className="flex items-center gap-3">
+            {/* Tactile LT / DK segmented theme toggle */}
+            <div className="flex items-center bg-print-bed dark:bg-dark-panel p-0.5 rounded border border-border-hairpin dark:border-dark-border">
+              <button
+                type="button"
+                onClick={() => setTheme('light')}
+                aria-label="Light theme"
+                className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold uppercase transition-all ${
+                  !isDark
+                    ? 'bg-surface-workbench dark:bg-dark-surface text-ink-primary dark:text-dark-ink-primary shadow-sm'
+                    : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary'
+                }`}
               >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
+                LT
+              </button>
+              <button
+                type="button"
+                onClick={() => setTheme('dark')}
+                aria-label="Dark theme"
+                className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold uppercase transition-all ${
+                  isDark
+                    ? 'bg-surface-workbench dark:bg-dark-surface text-ink-primary dark:text-dark-ink-primary shadow-sm'
+                    : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary'
+                }`}
+              >
+                DK
+              </button>
+            </div>
 
-          {/* Right Side Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {mounted && theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
+            <div className="h-4 w-hairpin bg-border-hairpin dark:bg-dark-border hidden sm:block"></div>
+
+            {/* Auth / Studio Entry Link */}
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface hover:bg-print-bed dark:hover:bg-dark-panel border border-border-hairpin dark:border-dark-border rounded shadow-sm transition-colors"
             >
-              Login
+              <User className="w-3.5 h-3.5" />
+              <span>Studio Log</span>
             </Link>
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors"
-            >
-              Sign Up
-            </Link>
-          </div>
 
-          {/* Mobile menu button */}
-          <div className="flex md:hidden items-center space-x-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle dark mode"
+            <Link
+              href="/create"
+              className="hidden md:inline-flex items-center justify-center px-3.5 py-1.5 text-xs font-semibold rounded bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas shadow-sm transition-colors"
             >
-              {mounted && theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </button>
+              New Matrix
+            </Link>
+
+            {/* Mobile Hamburger Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500"
-              aria-expanded={isMobileMenuOpen}
+              className="md:hidden p-2 rounded text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-surface transition-colors"
+              aria-label="Toggle Navigation Menu"
             >
-              <span className="sr-only">Open main menu</span>
               {isMobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
+                <X className="w-5 h-5" />
               ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
+                <Menu className="w-5 h-5" />
               )}
             </button>
           </div>
@@ -114,36 +130,35 @@ export default function Header() {
 
       {/* Mobile Menu Panel */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden border-t border-border-hairpin dark:border-dark-border bg-canvas-paper dark:bg-dark-canvas px-4 py-4 space-y-3">
+          <nav className="flex flex-col space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-900 transition-colors"
+                className="px-3 py-2 text-sm font-medium text-ink-primary dark:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-surface rounded transition-colors"
                 onClick={closeMobileMenu}
               >
                 {link.name}
               </Link>
             ))}
-          </div>
-          <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
-            <div className="flex items-center px-5 space-x-4">
-              <Link
-                href="/login"
-                className="block w-full px-4 py-2 text-center text-base font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 dark:text-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-md transition-colors"
-                onClick={closeMobileMenu}
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="block w-full px-4 py-2 text-center text-base font-medium text-white bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 rounded-md transition-colors"
-                onClick={closeMobileMenu}
-              >
-                Sign Up
-              </Link>
-            </div>
+          </nav>
+
+          <div className="pt-3 border-t border-border-hairpin dark:border-dark-border flex flex-col gap-2">
+            <Link
+              href="/create"
+              className="w-full py-2.5 text-center text-xs font-semibold rounded bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas shadow-sm"
+              onClick={closeMobileMenu}
+            >
+              Open QR Craft Station
+            </Link>
+            <Link
+              href="/login"
+              className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded"
+              onClick={closeMobileMenu}
+            >
+              Studio Login / Register
+            </Link>
           </div>
         </div>
       )}

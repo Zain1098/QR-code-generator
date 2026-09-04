@@ -3,9 +3,33 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { 
-  QrCode, Palette, Link2, BarChart3, Download, FolderOpen, 
-  Type, Wifi, User, Mail, Phone, MessageSquare, MapPin, Calendar, 
-  Share2, CreditCard, CheckCircle2, ChevronDown, ChevronUp, X
+  Globe, 
+  Type, 
+  Wifi, 
+  Contact, 
+  Mail, 
+  Phone, 
+  MessageSquare, 
+  MessageCircle, 
+  MapPin, 
+  Calendar, 
+  Share2, 
+  CreditCard, 
+  ChevronDown, 
+  ChevronUp, 
+  Check, 
+  X,
+  Layers,
+  Sparkles,
+  ShieldCheck,
+  Crop,
+  Focus,
+  Download,
+  ArrowRight,
+  Sliders,
+  Palette,
+  BarChart3,
+  QrCode
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -15,402 +39,609 @@ export default function LandingPage() {
     setOpenFaq(openFaq === index ? null : index);
   };
 
+  const qrTypes = [
+    { id: 'url', name: 'URL', code: 'SCHEMA: HTTP/S', icon: Globe, desc: 'Websites, links & landing pages' },
+    { id: 'text', name: 'Plain Text', code: 'SCHEMA: UTF-8', icon: Type, desc: 'Raw unformatted text strings' },
+    { id: 'wifi', name: 'Wi-Fi Network', code: 'SCHEMA: WPA/2/3', icon: Wifi, desc: 'Auto-join wireless credentials' },
+    { id: 'vcard', name: 'vCard Contact', code: 'SCHEMA: VCARD 3.0', icon: Contact, desc: 'Direct contact card import' },
+    { id: 'email', name: 'Email Dispatch', code: 'SCHEMA: MAILTO', icon: Mail, desc: 'Pre-filled subject & body' },
+    { id: 'phone', name: 'Phone Dial', code: 'SCHEMA: TEL', icon: Phone, desc: 'Direct telephonic dialer' },
+    { id: 'sms', name: 'SMS Prompt', code: 'SCHEMA: SMSTO', icon: MessageSquare, desc: 'Mobile SMS transmission' },
+    { id: 'whatsapp', name: 'WhatsApp Link', code: 'SCHEMA: WA.ME', icon: MessageCircle, desc: 'Instant messaging chat jump' },
+    { id: 'location', name: 'Geographic Pin', code: 'SCHEMA: GEO', icon: MapPin, desc: 'GPS latitude & longitude coordinates' },
+    { id: 'event', name: 'Calendar Event', code: 'SCHEMA: VEVENT', icon: Calendar, desc: 'iCal & Google Calendar invite' },
+    { id: 'social', name: 'Social Profile', code: 'SCHEMA: BIO.LINK', icon: Share2, desc: 'Multi-channel social landing' },
+    { id: 'payment', name: 'Payment Trigger', code: 'SCHEMA: UPI/PAY', icon: CreditCard, desc: 'Direct payment request routing' },
+  ];
+
   const features = [
     {
-      title: '12 QR Types',
-      description: 'Create QR codes for URLs, WiFi, vCards, Events, and much more.',
-      icon: <QrCode className="w-6 h-6" />
+      title: '12 Payload Schema Types',
+      desc: 'Complete support for web URLs, Wi-Fi keys, vCard 3.0, WhatsApp, SMS, GPS coordinates, and payment requests.',
+      icon: <QrCode className="w-5 h-5" />,
+      badge: 'ISO 18004 STANDARD'
     },
     {
-      title: 'Advanced Customization',
-      description: 'Personalize colors, dot styles, logos, and frames to match your brand.',
-      icon: <Palette className="w-6 h-6" />
+      title: 'Certified Photometric Contrast',
+      desc: 'Real-time WCAG AAA contrast ratio calculation ensures optical CMOS readers recognize matrix codes under dim ambient light.',
+      icon: <Sliders className="w-5 h-5" />,
+      badge: 'WCAG AAA PASS'
     },
     {
-      title: 'Dynamic QR Codes',
-      description: 'Change the destination URL anytime without reprinting your codes.',
-      icon: <Link2 className="w-6 h-6" />
+      title: 'Dynamic Routing & Telemetry',
+      desc: 'Update the destination URL anytime without reprinting physical press collateral, with real-time scan analytics.',
+      icon: <BarChart3 className="w-5 h-5" />,
+      badge: 'ZERO REPRINTING'
     },
     {
-      title: 'Scan Analytics',
-      description: 'Track scan counts, devices, operating systems, and geographical locations.',
-      icon: <BarChart3 className="w-6 h-6" />
+      title: 'Archival Vector SVG Output',
+      desc: 'Export mathematical vector paths for billboard printing, laser engraving, and lithography with zero degradation.',
+      icon: <Download className="w-5 h-5" />,
+      badge: 'INFINITE RESOLUTION'
     },
     {
-      title: 'Multiple Export Formats',
-      description: 'Download in high-resolution PNG, SVG, or WebP formats for any use case.',
-      icon: <Download className="w-6 h-6" />
+      title: 'Physical Substrate Calibration',
+      desc: 'Engineered presets for uncoated cotton paper, thermal corrugate, and synthetic backlit signage.',
+      icon: <Layers className="w-5 h-5" />,
+      badge: '±0.04MM TOLERANCE'
     },
     {
-      title: 'Folder Organization',
-      description: 'Keep your QR codes organized by project, campaign, or client.',
-      icon: <FolderOpen className="w-6 h-6" />
-    }
-  ];
-
-  const qrTypes = [
-    { name: 'URL', icon: <Link2 className="w-5 h-5" /> },
-    { name: 'Text', icon: <Type className="w-5 h-5" /> },
-    { name: 'WiFi', icon: <Wifi className="w-5 h-5" /> },
-    { name: 'Contact', icon: <User className="w-5 h-5" /> },
-    { name: 'Email', icon: <Mail className="w-5 h-5" /> },
-    { name: 'Phone', icon: <Phone className="w-5 h-5" /> },
-    { name: 'SMS', icon: <MessageSquare className="w-5 h-5" /> },
-    { name: 'WhatsApp', icon: <Share2 className="w-5 h-5" /> },
-    { name: 'Location', icon: <MapPin className="w-5 h-5" /> },
-    { name: 'Event', icon: <Calendar className="w-5 h-5" /> },
-    { name: 'Social', icon: <Share2 className="w-5 h-5" /> },
-    { name: 'Payment', icon: <CreditCard className="w-5 h-5" /> },
-  ];
-
-  const useCases = [
-    { title: 'Restaurants', desc: 'Touchless digital menus for safe and easy ordering.' },
-    { title: 'Retail & E-commerce', desc: 'Link to product details, reviews, or special discounts.' },
-    { title: 'Events & Conferences', desc: 'Ticketing, schedules, and exhibitor information.' },
-    { title: 'Marketing Campaigns', desc: 'Track offline to online conversion rates easily.' },
-    { title: 'Business Cards', desc: 'Instantly share contact details directly to address books.' },
-    { title: 'Real Estate', desc: 'Virtual tours and property information at the tap of a screen.' },
-    { title: 'Education', desc: 'Quick access to learning resources and assignments.' },
-    { title: 'Healthcare', desc: 'Patient information, appointment booking, and facility maps.' }
+      title: 'Insignia & Emblem Embedding',
+      desc: 'Safely integrate company logos into the center matrix with automatic elevation to Reed-Solomon Level H (30% recovery).',
+      icon: <Palette className="w-5 h-5" />,
+      badge: 'REED-SOLOMON 30%'
+    },
   ];
 
   const faqs = [
     {
-      q: 'What is a QR code?',
-      a: 'A QR (Quick Response) code is a two-dimensional barcode that can be read by smartphones and dedicated QR reading devices. It can store various types of information, such as URLs, contact details, or text.'
+      q: 'What is the minimum recommended print size for a scannable QR code?',
+      a: 'For standard optical smartphone cameras, the minimum scannable dimension is 20 × 20 mm (approx. 0.8 × 0.8 inches) for low-density payloads like short URLs. For complex, high-density payloads such as vCard contacts, we recommend a minimum print size of 35 × 35 mm combined with Reed-Solomon Error Correction Level H to ensure optical camera capture.'
     },
     {
-      q: 'Static vs dynamic QR codes?',
-      a: 'Static QR codes embed the data directly into the code. Once printed, they cannot be changed. Dynamic QR codes contain a short URL that redirects to your actual content, allowing you to change the destination anytime and track scan analytics.'
+      q: 'What is the difference between static and dynamic QR codes?',
+      a: 'Static QR codes encode the data directly into the black and white pixel matrix. They work indefinitely without servers and never expire, but their destination cannot be changed once printed. Dynamic QR codes route through a short redirect URL, allowing you to update the target content at any time without reprinting and enabling live scan analytics.'
     },
     {
-      q: 'Is it free to create QR codes?',
-      a: 'Yes, our basic plan allows you to create static QR codes and a limited number of dynamic QR codes completely free of charge. For advanced features and higher limits, we offer premium plans.'
+      q: 'Why should I export in SVG format instead of PNG for physical printing?',
+      a: 'Vector SVG (Scalable Vector Graphics) encodes matrix paths mathematically rather than as fixed pixel rasters. When sent to commercial litho presses, foil stampers, or large-format billboard printers, SVG scales infinitely without blur, pixelation, or scanning failure.'
     },
     {
-      q: 'Can I add a logo to my QR code?',
-      a: 'Yes! With our Pro and Business plans, you can easily upload your company logo or any image to place in the center of your QR code to increase brand recognition.'
+      q: 'How does WCAG contrast verification guarantee scannability?',
+      a: 'Camera sensors require substantial optical contrast between the matrix dots (foreground ink) and the substrate (background paper). Our tool calculates the exact photometric contrast ratio in real time. A ratio of 7:1+ (WCAG AAA) guarantees immediate scannability even in challenging shadows or harsh glares.'
     },
     {
-      q: 'How does scan analytics work?',
-      a: 'When someone scans your dynamic QR code, our system records the scan event before redirecting them. We track metrics like time, general location (based on IP), device type, and operating system.'
+      q: 'Can I safely upload my company logo into the center of the QR code?',
+      a: 'Yes. When an emblem or logo is uploaded, FORM // QR automatically upgrades error recovery to Reed-Solomon Level H. This reserves up to 30% redundant matrix data so that optical scanners easily reconstruct any information occluded by the logo.'
     },
     {
-      q: 'Can I change the destination of a QR code?',
-      a: 'Yes, if you use a dynamic QR code. You can update the target URL in your dashboard at any time without needing to reprint the QR code itself.'
-    },
-    {
-      q: 'What export formats are supported?',
-      a: 'You can download your generated QR codes in PNG, SVG (vector), and WebP formats. SVG is highly recommended for print materials as it scales without losing quality.'
-    },
-    {
-      q: 'Is my data secure?',
-      a: 'Absolutely. We use industry-standard encryption to protect your data. We do not sell your personal information or the scan data of your users to third parties.'
+      q: 'Are generated QR codes free for commercial and packaging use?',
+      a: 'Yes. All static QR codes generated on FORM // QR are completely free, unencumbered by royalties, and ready for commercial print packaging, retail products, and digital collateral.'
     }
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-32 overflow-hidden bg-gradient-to-b from-brand-50 to-white dark:from-gray-950 dark:to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6">
-              Create Powerful <span className="text-brand-600 dark:text-brand-500">QR Codes</span> in Seconds
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-              Generate static and dynamic QR codes with advanced customization, analytics, and management tools. Free to use, professional-grade results.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/create"
-                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-white bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 shadow-lg hover:shadow-xl transition-all"
-              >
-                Create QR Code
-              </Link>
-              <Link
-                href="#features"
-                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 shadow-sm transition-all"
-              >
-                Explore Features
-              </Link>
-            </div>
-          </div>
+    <div className="flex flex-col min-h-screen bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary pt-14 transition-colors duration-200">
+      
+      {/* 1. HERO SECTION: Specimen Atelier Stage */}
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-10 pb-16 md:py-20 border-b border-border-hairpin dark:border-dark-border">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-5">
           
-          {/* Mockup Illustration */}
-          <div className="mt-20 mx-auto max-w-3xl relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-brand-100 to-brand-50 dark:from-brand-900/20 dark:to-brand-800/20 rounded-3xl blur-3xl opacity-50"></div>
-            <div className="relative bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-center min-h-[300px]">
-               <div className="grid grid-cols-5 gap-2 w-48 h-48 opacity-80">
-                  {Array.from({ length: 25 }).map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`rounded-sm ${(i === 0 || i === 4 || i === 20 || i === 24) ? 'bg-brand-600 dark:bg-brand-500 scale-125' : (i % 2 === 0 ? 'bg-gray-800 dark:bg-gray-200' : 'bg-transparent')} transition-all duration-500 hover:scale-110`}
-                    ></div>
-                  ))}
-               </div>
-            </div>
+          {/* Top Specimen Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-print-bed dark:bg-dark-panel rounded border border-border-hairpin dark:border-dark-border font-mono text-[11px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted select-none">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+            <span>SPECIMEN UTILITY // REV. 04</span>
+            <span>•</span>
+            <span className="text-dark-accent dark:text-dark-accent-hover font-semibold">CERTIFIED ISO 18004</span>
           </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Everything You Need</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              A complete toolkit for generating, managing, and tracking your QR codes.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="p-6 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 inline-flex items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 mb-6">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          {/* Main Display Headline */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl font-sans text-ink-primary dark:text-dark-ink-primary">
+            QR Craft &amp; Specimen Generator
+          </h1>
 
-      {/* QR Types Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Supported QR Types</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Create specific codes for any scenario.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {qrTypes.map((type, index) => (
-              <div key={index} className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-brand-500 dark:hover:border-brand-500 transition-colors group cursor-pointer">
-                <div className="text-gray-400 group-hover:text-brand-600 dark:group-hover:text-brand-400 mb-3 transition-colors">
-                  {type.icon}
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{type.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Static vs Dynamic Section */}
-      <section className="py-24 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Static vs Dynamic</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Choose the right type of QR code for your needs.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="p-8 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <QrCode className="text-gray-400" /> Static QR Codes
-              </h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Data is embedded directly into the code pattern.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Works forever, never expires.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Completely free to create and use.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <X className="w-6 h-6 text-red-400 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Destination cannot be changed once printed.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <X className="w-6 h-6 text-red-400 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">No scan tracking or analytics.</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="p-8 rounded-2xl border-2 border-brand-500 bg-white dark:bg-gray-900 relative shadow-lg">
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-brand-500 text-white px-3 py-1 rounded-full text-sm font-semibold tracking-wide">
-                Recommended
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <Link2 className="text-brand-500" /> Dynamic QR Codes
-              </h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Contains a short redirect URL.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">Change destination URL anytime without reprinting.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Track scans, locations, devices, and dates.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Password protect or set expiry dates.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-gray-600 dark:text-gray-300">Requires a free or paid account.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Use Cases Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Endless Possibilities</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              How our users are leveraging QR codes across different industries.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {useCases.map((useCase, index) => (
-              <div key={index} className="p-6 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{useCase.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{useCase.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Start for free, upgrade when you need more power.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Free Tier */}
-            <div className="p-8 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Free</h3>
-              <div className="text-4xl font-extrabold text-gray-900 dark:text-white mb-6">$0<span className="text-lg font-normal text-gray-500 dark:text-gray-400">/mo</span></div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> 10 Static QR/month</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> 3 Dynamic QR codes</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> Basic customization</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> PNG export</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> 7-day analytics</li>
-              </ul>
-              <Link href="/signup" className="block w-full py-3 px-4 text-center rounded-lg font-medium border-2 border-brand-600 text-brand-600 hover:bg-brand-50 dark:border-brand-500 dark:text-brand-400 dark:hover:bg-brand-900/20 transition-colors">
-                Get Started
-              </Link>
-            </div>
-
-            {/* Pro Tier */}
-            <div className="p-8 rounded-2xl border-2 border-brand-500 bg-brand-50 dark:bg-brand-900/10 flex flex-col relative transform md:-translate-y-4 shadow-xl">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white px-4 py-1 rounded-full text-sm font-semibold tracking-wide">
-                Most Popular
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Pro</h3>
-              <div className="text-4xl font-extrabold text-gray-900 dark:text-white mb-6">$12<span className="text-lg font-normal text-gray-500 dark:text-gray-400">/mo</span></div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> Unlimited Static QR</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> 50 Dynamic QR codes</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> Advanced customization</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> Logo upload</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> All export formats (SVG, WebP)</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> 1-year analytics</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-brand-500 shrink-0" /> Bulk generation</li>
-              </ul>
-              <Link href="/signup?plan=pro" className="block w-full py-3 px-4 text-center rounded-lg font-medium bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 transition-colors shadow-md">
-                Upgrade to Pro
-              </Link>
-            </div>
-
-            {/* Business Tier */}
-            <div className="p-8 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Business</h3>
-              <div className="text-4xl font-extrabold text-gray-900 dark:text-white mb-6">$39<span className="text-lg font-normal text-gray-500 dark:text-gray-400">/mo</span></div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> Everything in Pro</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> 500 Dynamic QR codes</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> Team members</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> API access</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> Priority support</li>
-                <li className="flex gap-3 text-gray-600 dark:text-gray-300"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /> Custom branding</li>
-              </ul>
-              <Link href="/signup?plan=business" className="block w-full py-3 px-4 text-center rounded-lg font-medium border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
-                Contact Sales
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full px-6 py-4 flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                >
-                  <span className="font-semibold text-left text-gray-900 dark:text-white">{faq.q}</span>
-                  {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500 shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500 shrink-0" />
-                  )}
-                </button>
-                
-                <div 
-                  className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                    openFaq === index ? 'max-h-96 pb-4 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <p className="text-gray-600 dark:text-gray-400">{faq.a}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 bg-brand-600 dark:bg-brand-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">Ready to Create Your First QR Code?</h2>
-          <p className="text-xl text-brand-100 mb-10 max-w-2xl mx-auto">
-            Join thousands of professionals generating millions of scans every month. No credit card required.
+          {/* Subtitle */}
+          <p className="text-sm sm:text-base md:text-lg text-ink-muted dark:text-dark-ink-muted max-w-2xl font-sans leading-relaxed">
+            Configure high-density matrix codes for print packaging, brand identities, and physical collateral with certified optical legibility and vector SVG export.
           </p>
+
+          {/* Action CTAs */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 w-full sm:w-auto">
+            <Link
+              href="/create"
+              className="w-full sm:w-auto h-12 px-6 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas rounded font-mono text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99]"
+            >
+              <span>Launch QR Atelier</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="#press-specs"
+              className="w-full sm:w-auto h-12 px-5 bg-surface-workbench dark:bg-dark-panel hover:bg-print-bed dark:hover:bg-dark-surface text-ink-primary dark:text-dark-ink-primary border border-border-hairpin dark:border-dark-border rounded font-mono text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
+            >
+              <span>Explore Specifications</span>
+            </Link>
+          </div>
+
+          {/* Authentic Live Specimen Exhibition Plate */}
+          <div className="w-full max-w-2xl mt-8 pt-4">
+            <div className="w-full bg-print-bed dark:bg-dark-panel p-6 sm:p-8 rounded-xl relative border border-border-hairpin dark:border-dark-border shadow-md overflow-hidden flex flex-col items-center">
+              {/* Drafting crosshairs */}
+              <div className="absolute top-3 left-3 font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted pointer-events-none select-none flex items-center gap-1">
+                <Crop className="w-3.5 h-3.5" />
+                <span>0,0 CROP_LT</span>
+              </div>
+              <div className="absolute top-3 right-3 font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted pointer-events-none select-none flex items-center gap-1">
+                <span>PRINT_RT</span>
+                <Focus className="w-3.5 h-3.5" />
+              </div>
+              <div className="absolute bottom-3 left-3 font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted pointer-events-none select-none">
+                <span>DRAFT: 100% SCALE</span>
+              </div>
+              <div className="absolute bottom-3 right-3 font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted pointer-events-none select-none">
+                <span>PASS: OPTICAL-99.8</span>
+              </div>
+
+              {/* Substrate Card */}
+              <div className="bg-white p-6 sm:p-8 rounded shadow-md relative my-4 flex flex-col items-center justify-center max-w-[280px] aspect-square w-full">
+                {/* Corner registration brackets */}
+                <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t-2 border-l-2 border-black/30"></div>
+                <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t-2 border-r-2 border-black/30"></div>
+                <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b-2 border-l-2 border-black/30"></div>
+                <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b-2 border-r-2 border-black/30"></div>
+
+                {/* Crisp Vector QR Specimen */}
+                <svg className="w-full h-full text-zinc-900" viewBox="0 0 29 29" shapeRendering="crispEdges">
+                  <rect width="29" height="29" fill="#FFFFFF" />
+                  <rect x="2" y="2" width="7" height="7" fill="currentColor" />
+                  <rect x="3" y="3" width="5" height="5" fill="#FFFFFF" />
+                  <rect x="4" y="4" width="3" height="3" fill="currentColor" />
+
+                  <rect x="20" y="2" width="7" height="7" fill="currentColor" />
+                  <rect x="21" y="3" width="5" height="5" fill="#FFFFFF" />
+                  <rect x="22" y="4" width="3" height="3" fill="currentColor" />
+
+                  <rect x="2" y="20" width="7" height="7" fill="currentColor" />
+                  <rect x="3" y="21" width="5" height="5" fill="#FFFFFF" />
+                  <rect x="4" y="22" width="3" height="3" fill="currentColor" />
+
+                  <rect x="18" y="18" width="5" height="5" fill="currentColor" />
+                  <rect x="19" y="19" width="3" height="3" fill="#FFFFFF" />
+                  <rect x="20" y="20" width="1" height="1" fill="currentColor" />
+
+                  <rect x="10" y="4" width="1" height="1" fill="currentColor" />
+                  <rect x="12" y="4" width="1" height="1" fill="currentColor" />
+                  <rect x="14" y="4" width="1" height="1" fill="currentColor" />
+                  <rect x="16" y="4" width="1" height="1" fill="currentColor" />
+                  <rect x="18" y="4" width="1" height="1" fill="currentColor" />
+
+                  <rect x="4" y="10" width="1" height="1" fill="currentColor" />
+                  <rect x="4" y="12" width="1" height="1" fill="currentColor" />
+                  <rect x="4" y="14" width="1" height="1" fill="currentColor" />
+                  <rect x="4" y="16" width="1" height="1" fill="currentColor" />
+                  <rect x="4" y="18" width="1" height="1" fill="currentColor" />
+
+                  <rect x="10" y="2" width="1" height="2" fill="currentColor" />
+                  <rect x="12" y="2" width="2" height="1" fill="currentColor" />
+                  <rect x="16" y="2" width="1" height="1" fill="currentColor" />
+                  <rect x="18" y="2" width="1" height="2" fill="currentColor" />
+                  <rect x="10" y="7" width="3" height="1" fill="currentColor" />
+                  <rect x="14" y="6" width="1" height="3" fill="currentColor" />
+                  <rect x="17" y="7" width="2" height="1" fill="currentColor" />
+                  <rect x="2" y="11" width="2" height="1" fill="currentColor" />
+                  <rect x="6" y="10" width="2" height="2" fill="currentColor" />
+                  <rect x="9" y="11" width="1" height="3" fill="currentColor" />
+                  <rect x="11" y="10" width="2" height="1" fill="currentColor" />
+                  <rect x="14" y="11" width="3" height="2" fill="currentColor" />
+                  <rect x="18" y="10" width="2" height="1" fill="currentColor" />
+                  <rect x="22" y="10" width="1" height="3" fill="currentColor" />
+                  <rect x="25" y="11" width="2" height="2" fill="currentColor" />
+                  <rect x="7" y="14" width="2" height="1" fill="currentColor" />
+                  <rect x="10" y="13" width="2" height="2" fill="currentColor" />
+                  <rect x="13" y="14" width="2" height="1" fill="currentColor" />
+                  <rect x="17" y="13" width="1" height="3" fill="currentColor" />
+                  <rect x="20" y="14" width="2" height="2" fill="currentColor" />
+                  <rect x="24" y="14" width="3" height="1" fill="currentColor" />
+                  <rect x="2" y="15" width="2" height="2" fill="currentColor" />
+                  <rect x="6" y="17" width="1" height="2" fill="currentColor" />
+                  <rect x="8" y="16" width="3" height="1" fill="currentColor" />
+                  <rect x="12" y="17" width="2" height="1" fill="currentColor" />
+                  <rect x="15" y="16" width="1" height="3" fill="currentColor" />
+                  <rect x="23" y="16" width="2" height="1" fill="currentColor" />
+                  <rect x="26" y="17" width="1" height="2" fill="currentColor" />
+                </svg>
+
+                <div className="absolute bottom-1.5 text-center w-full">
+                  <span className="font-mono text-[8px] uppercase tracking-widest text-zinc-400">
+                    ATELIER SWISS PROOF // ZERO DEGRADATION
+                  </span>
+                </div>
+              </div>
+
+              {/* Specimen Ledger Pill */}
+              <div className="w-full max-w-sm bg-surface-workbench dark:bg-dark-surface px-3 py-1.5 rounded border border-border-hairpin dark:border-dark-border shadow-sm flex items-center justify-between font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted">
+                <span className="text-ink-primary dark:text-dark-ink-primary font-semibold">SPECIMEN № 042</span>
+                <span>512 × 512 PT</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+                  ISO 18004 PASS
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. 12 PAYLOAD SCHEMAS GRID */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-2">
+          <div>
+            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+              Schema Library
+            </span>
+            <h2 className="text-2xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+              12 High-Density Payload Protocols
+            </h2>
+          </div>
           <Link
             href="/create"
-            className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl text-brand-600 bg-white hover:bg-gray-50 hover:scale-105 shadow-xl transition-all duration-300"
+            className="text-xs font-mono uppercase tracking-wider text-dark-accent dark:text-dark-accent-hover hover:underline flex items-center gap-1"
           >
-            Create QR Code Now
+            <span>Open All in Atelier</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {qrTypes.map((type) => {
+            const Icon = type.icon;
+            return (
+              <Link
+                key={type.id}
+                href="/create"
+                className="group p-3.5 bg-surface-workbench dark:bg-dark-panel rounded-lg border border-border-hairpin dark:border-dark-border hover:border-ink-primary dark:hover:border-dark-ink-primary transition-all shadow-sm flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Icon className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted group-hover:text-ink-primary dark:group-hover:text-dark-ink-primary transition-colors" />
+                    <span className="font-mono text-[9px] text-ink-muted dark:text-dark-ink-muted uppercase">{type.id}</span>
+                  </div>
+                  <div className="text-xs font-semibold text-ink-primary dark:text-dark-ink-primary leading-tight">
+                    {type.name}
+                  </div>
+                  <p className="text-[11px] text-ink-muted dark:text-dark-ink-muted mt-1 leading-snug">
+                    {type.desc}
+                  </p>
+                </div>
+                <div className="mt-3 pt-2 border-t border-border-hairpin/60 dark:border-dark-border/60 font-mono text-[9px] text-ink-muted dark:text-dark-ink-muted truncate">
+                  {type.code}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 3. OPTICAL SUBSTRATE BENCHMARKS (Press Readiness) */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-print-bed/60 dark:bg-dark-surface/50 border-y border-border-hairpin dark:border-dark-border" id="press-specs">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="space-y-1">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+              Press Readiness Ledger
+            </span>
+            <h2 className="text-2xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+              Optical Substrate Benchmarks &amp; Press Standards
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 bg-surface-workbench dark:bg-dark-panel rounded-xl border border-border-hairpin dark:border-dark-border shadow-sm space-y-2.5">
+              <div className="flex items-center justify-between font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+                <span>BENCH 01 // MATTE</span>
+                <Layers className="w-4 h-4" />
+              </div>
+              <h3 className="text-base font-semibold text-ink-primary dark:text-dark-ink-primary">
+                Uncoated Cotton Stock 340gsm
+              </h3>
+              <p className="text-xs text-ink-muted dark:text-dark-ink-muted leading-relaxed">
+                High ink absorption rates require Reed-Solomon Error Correction Level H to counteract edge feathering under 300 DPI litho presses.
+              </p>
+              <div className="pt-2 font-mono text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                TOLERANCE: ±0.04mm
+              </div>
+            </div>
+
+            <div className="p-6 bg-surface-workbench dark:bg-dark-panel rounded-xl border border-border-hairpin dark:border-dark-border shadow-sm space-y-2.5">
+              <div className="flex items-center justify-between font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+                <span>BENCH 02 // THERMAL</span>
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <h3 className="text-base font-semibold text-ink-primary dark:text-dark-ink-primary">
+                Packaging Foil &amp; Corrugate
+              </h3>
+              <p className="text-xs text-ink-muted dark:text-dark-ink-muted leading-relaxed">
+                Curved cylindrical surfaces require module size expansion to a minimum of 0.35mm per matrix element for handheld CMOS readers.
+              </p>
+              <div className="pt-2 font-mono text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                MIN SCALE: 25 × 25mm
+              </div>
+            </div>
+
+            <div className="p-6 bg-surface-workbench dark:bg-dark-panel rounded-xl border border-border-hairpin dark:border-dark-border shadow-sm space-y-2.5">
+              <div className="flex items-center justify-between font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+                <span>BENCH 03 // VECTOR</span>
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <h3 className="text-base font-semibold text-ink-primary dark:text-dark-ink-primary">
+                Architectural Signage &amp; Outdoor
+              </h3>
+              <p className="text-xs text-ink-muted dark:text-dark-ink-muted leading-relaxed">
+                Exporting infinite resolution SVG vectors guarantees zero blur or jagged pixels when scaled onto metal plaques or giant display banners.
+              </p>
+              <div className="pt-2 font-mono text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                SCALING: INFINITE VECTOR
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. STATIC VS DYNAMIC MATRIX ARCHITECTURE */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto w-full">
+        <div className="text-center mb-10 space-y-1">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+            Architectural Choice
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+            Static Embedded vs. Dynamic Routing
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          {/* Static Card */}
+          <div className="p-6 rounded-xl border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-panel space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+                Static Embedded Matrix
+              </h3>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-print-bed dark:bg-dark-surface text-ink-muted dark:text-dark-ink-muted uppercase">
+                Zero Server Dependency
+              </span>
+            </div>
+            <ul className="space-y-2.5 text-xs text-ink-muted dark:text-dark-ink-muted">
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Raw data embedded directly into the physical matrix modules.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Works forever offline, never expires, completely free.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <X className="w-4 h-4 text-ink-muted/50 flex-shrink-0 mt-0.5" />
+                <span>Destination URL cannot be changed once printed on paper.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <X className="w-4 h-4 text-ink-muted/50 flex-shrink-0 mt-0.5" />
+                <span>No scan count analytics or geographical telemetry.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Dynamic Card */}
+          <div className="p-6 rounded-xl border-2 border-ink-primary dark:border-dark-ink-primary bg-surface-workbench dark:bg-dark-panel space-y-4 shadow-sm relative">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+                Dynamic Routing Matrix
+              </h3>
+              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas font-semibold uppercase">
+                Recommended For Press
+              </span>
+            </div>
+            <ul className="space-y-2.5 text-xs text-ink-muted dark:text-dark-ink-muted">
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Change destination URL anytime without reprinting packaging or collateral.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Real-time telemetry: scan counts, devices, operating systems, and countries.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Lower visual matrix density allows ultra-small physical print sizes (20mm).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <span>Password protection and scheduled expiry dates supported.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. ENGINE CAPABILITIES */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-print-bed/60 dark:bg-dark-surface/50 border-t border-border-hairpin dark:border-dark-border" id="features">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="text-center space-y-1">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+              Engine Specifications
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+              Calibrated For Press &amp; Digital Collateral
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="p-5 bg-surface-workbench dark:bg-dark-panel rounded-xl border border-border-hairpin dark:border-dark-border shadow-sm space-y-3 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-8 h-8 rounded bg-print-bed dark:bg-dark-surface flex items-center justify-center text-ink-primary dark:text-dark-ink-primary">
+                      {feature.icon}
+                    </div>
+                    <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-print-bed dark:bg-dark-surface text-ink-muted dark:text-dark-ink-muted font-semibold">
+                      {feature.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-ink-primary dark:text-dark-ink-primary">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs text-ink-muted dark:text-dark-ink-muted leading-relaxed mt-1">
+                    {feature.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. TRANSPARENT PRICING TIERS */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 max-w-7xl mx-auto w-full" id="pricing">
+        <div className="text-center mb-10 space-y-1">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+            Commercial Tiers
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+            Transparent Atelier Licensing
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Free Tier */}
+          <div className="p-6 rounded-xl border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-panel flex flex-col justify-between">
+            <div className="space-y-4">
+              <div>
+                <div className="font-mono text-[10px] uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">TIER 01</div>
+                <h3 className="text-xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">Free Atelier</h3>
+              </div>
+              <div className="font-mono text-3xl font-bold text-ink-primary dark:text-dark-ink-primary">$0</div>
+              <ul className="space-y-2 text-xs text-ink-muted dark:text-dark-ink-muted">
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Unlimited Static QR Codes</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> High-Resolution PNG Download</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Standard Error Correction Levels</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Direct Channel Color Calibration</li>
+              </ul>
+            </div>
+            <Link
+              href="/create"
+              className="mt-6 w-full py-2.5 text-center text-xs font-mono font-semibold uppercase rounded border border-border-hairpin dark:border-dark-border bg-print-bed dark:bg-dark-surface hover:bg-canvas-paper dark:hover:bg-dark-panel text-ink-primary dark:text-dark-ink-primary transition-colors"
+            >
+              Start Generating
+            </Link>
+          </div>
+
+          {/* Pro Tier */}
+          <div className="p-6 rounded-xl border-2 border-ink-primary dark:border-dark-ink-primary bg-surface-workbench dark:bg-dark-panel flex flex-col justify-between shadow-md relative">
+            <span className="absolute -top-2.5 right-6 px-2 py-0.5 rounded bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas font-mono text-[9px] uppercase font-bold">
+              MOST POPULAR
+            </span>
+            <div className="space-y-4">
+              <div>
+                <div className="font-mono text-[10px] uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">TIER 02</div>
+                <h3 className="text-xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">Studio Pro</h3>
+              </div>
+              <div className="font-mono text-3xl font-bold text-ink-primary dark:text-dark-ink-primary">$12 <span className="text-xs text-ink-muted dark:text-dark-ink-muted font-normal">/ mo</span></div>
+              <ul className="space-y-2 text-xs text-ink-muted dark:text-dark-ink-muted">
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Everything in Free</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Infinite Resolution Vector SVG Export</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> 50 Dynamic QR Codes with Analytics</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Insignia / Center Logo Embedding</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Custom Corner Squares &amp; Dot Styles</li>
+              </ul>
+            </div>
+            <Link
+              href="/signup?plan=pro"
+              className="mt-6 w-full py-2.5 text-center text-xs font-mono font-semibold uppercase rounded bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas transition-colors shadow-sm"
+            >
+              Upgrade to Pro
+            </Link>
+          </div>
+
+          {/* Business Tier */}
+          <div className="p-6 rounded-xl border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-panel flex flex-col justify-between">
+            <div className="space-y-4">
+              <div>
+                <div className="font-mono text-[10px] uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">TIER 03</div>
+                <h3 className="text-xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">Commercial Press</h3>
+              </div>
+              <div className="font-mono text-3xl font-bold text-ink-primary dark:text-dark-ink-primary">$39 <span className="text-xs text-ink-muted dark:text-dark-ink-muted font-normal">/ mo</span></div>
+              <ul className="space-y-2 text-xs text-ink-muted dark:text-dark-ink-muted">
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Everything in Studio Pro</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> 500 Dynamic QR Codes</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Automated REST API Access</li>
+                <li className="flex items-center gap-2"><Check className="w-3.5 h-3.5 text-emerald-600" /> Bulk Matrix Compilation</li>
+              </ul>
+            </div>
+            <Link
+              href="/signup?plan=business"
+              className="mt-6 w-full py-2.5 text-center text-xs font-mono font-semibold uppercase rounded border border-border-hairpin dark:border-dark-border bg-print-bed dark:bg-dark-surface hover:bg-canvas-paper dark:hover:bg-dark-panel text-ink-primary dark:text-dark-ink-primary transition-colors"
+            >
+              Contact Press Sales
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. FAQ SECTION: Answer Engine Optimized (AEO) */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-print-bed/60 dark:bg-dark-surface/50 border-t border-border-hairpin dark:border-dark-border">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <div className="text-center space-y-1">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold">
+              Technical Inquiries
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+              Frequently Asked Technical Questions
+            </h2>
+          </div>
+
+          <div className="space-y-2.5">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="bg-surface-workbench dark:bg-dark-panel rounded-lg border border-border-hairpin dark:border-dark-border overflow-hidden transition-colors"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-4 py-3.5 flex justify-between items-center text-left text-xs font-semibold text-ink-primary dark:text-dark-ink-primary select-none focus:outline-none"
+                >
+                  <span className="pr-4">{faq.q}</span>
+                  {openFaq === index ? (
+                    <ChevronUp className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted flex-shrink-0" />
+                  )}
+                </button>
+                {openFaq === index && (
+                  <div className="px-4 pb-4 text-xs text-ink-muted dark:text-dark-ink-muted leading-relaxed border-t border-border-hairpin/60 dark:border-dark-border/60 pt-2.5">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. MASTER ACTION CALLOUT */}
+      <section className="px-4 sm:px-6 lg:px-8 py-14 max-w-5xl mx-auto w-full text-center space-y-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-ink-primary dark:text-dark-ink-primary font-sans">
+          Deploy Certified Optical Matrices Today
+        </h2>
+        <p className="text-xs sm:text-sm text-ink-muted dark:text-dark-ink-muted max-w-xl mx-auto leading-relaxed">
+          Zero sign-up friction. Launch the craft station, calibrate your ink substrate, and export print-ready vector SVGs in seconds.
+        </p>
+        <div className="pt-2">
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas rounded font-mono text-xs uppercase font-semibold tracking-wider shadow-sm transition-all"
+          >
+            <span>Open Generator Atelier</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>

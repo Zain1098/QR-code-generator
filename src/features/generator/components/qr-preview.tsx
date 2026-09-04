@@ -90,32 +90,42 @@ export function QRPreview({ data, customization, className = '' }: QRPreviewProp
 
   if (!data) {
     return (
-      <div className={`flex flex-col items-center justify-center p-8 text-gray-400 dark:text-gray-500 ${className}`}>
-        <svg className="w-20 h-20 mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
-        <p className="text-sm">Enter data and customize your QR code</p>
+      <div className={`flex flex-col items-center justify-center p-8 text-center text-ink-muted dark:text-dark-ink-muted ${className}`}>
+        <div className="w-16 h-16 mb-3 border border-dashed border-border-hairpin dark:border-dark-border rounded flex items-center justify-center bg-print-bed/50 dark:bg-dark-panel/50">
+          <svg className="w-8 h-8 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+        </div>
+        <div className="font-mono text-xs uppercase tracking-wider font-semibold text-ink-primary dark:text-dark-ink-primary mb-1">
+          PAYLOAD_REQUIRED
+        </div>
+        <p className="font-sans text-xs text-ink-muted dark:text-dark-ink-muted max-w-[220px]">
+          Enter schema data on the craft station to compile live matrix.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className={`flex flex-col items-center ${className}`}>
+    <div className={`flex flex-col items-center justify-center ${className}`}>
       {isLoading && (
-        <div className="flex items-center justify-center w-[280px] h-[280px]">
-          <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center justify-center w-[280px] h-[280px] gap-2">
+          <div className="w-7 h-7 border-2 border-ink-primary dark:border-dark-ink-primary border-t-transparent rounded-full animate-spin" />
+          <span className="font-mono text-[11px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted">
+            Compiling Matrix...
+          </span>
         </div>
       )}
       <div
         ref={containerRef}
-        className={`qr-preview-container ${isLoading ? 'hidden' : ''}`}
-        style={{ maxWidth: '280px' }}
+        className={`qr-preview-container flex items-center justify-center ${isLoading ? 'hidden' : ''}`}
+        style={{ maxWidth: '280px', width: '100%' }}
       />
       {error && (
-        <p className="mt-2 text-sm text-red-500">{error}</p>
+        <p className="mt-2 text-xs font-mono text-red-600 dark:text-red-400">{error}</p>
       )}
     </div>
   );
