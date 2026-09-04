@@ -21,8 +21,17 @@ export default function Header() {
     setMounted(true);
     const supabase = createClient();
 
+    const isGuest = typeof document !== 'undefined' && document.cookie.includes('demo_guest=true');
+    if (isGuest) {
+      setUser({ email: 'guest@formqr.studio', user_metadata: { full_name: 'Guest Operator' } });
+      setAuthLoading(false);
+      return;
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
+      setAuthLoading(false);
+    }).catch(() => {
       setAuthLoading(false);
     });
 
@@ -44,6 +53,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     try {
+      document.cookie = 'demo_guest=; path=/; max-age=0';
       const supabase = createClient();
       await supabase.auth.signOut();
       setUser(null);
@@ -52,7 +62,10 @@ export default function Header() {
       router.push('/login');
       router.refresh();
     } catch {
-      toast.error('Failed to sign out.');
+      document.cookie = 'demo_guest=; path=/; max-age=0';
+      setUser(null);
+      closeMobileMenu();
+      router.push('/login');
     }
   };
 

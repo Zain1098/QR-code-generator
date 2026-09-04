@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowRight, CheckCircle2, Sparkles, UserCheck } from 'lucide-react';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -15,6 +16,13 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [configured, setConfigured] = useState(true);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setConfigured(isSupabaseConfigured());
+  }, []);
 
   // Password strength logic
   const hasMinLength = password.length >= 8;
@@ -32,6 +40,13 @@ export default function SignupPage() {
 
     if (!acceptTerms) {
       setError('Please accept the studio protocol and terms.');
+      return;
+    }
+
+    if (!isSupabaseConfigured()) {
+      toast.info('Supabase database not connected in Vercel. Redirecting to Guest Workbench...');
+      document.cookie = 'demo_guest=true; path=/; max-age=86400';
+      router.push('/dashboard');
       return;
     }
 
@@ -109,6 +124,25 @@ export default function SignupPage() {
             Create an archival workbench for high-density matrix creation
           </p>
         </div>
+
+        {!configured && (
+          <div className="mb-5 p-3 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-mono">
+            <div className="font-semibold mb-1 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>PORTFOLIO DEMO MODE ACTIVE</span>
+            </div>
+            <p className="font-sans text-[11px] leading-relaxed text-amber-700 dark:text-amber-400 mb-2">
+              Supabase database is not configured in Vercel. Submitting this form will automatically launch a Guest Workbench session, or you can log in directly as guest.
+            </p>
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 underline underline-offset-2"
+            >
+              <UserCheck className="w-3 h-3" />
+              <span>Enter directly as Guest &rarr;</span>
+            </Link>
+          </div>
+        )}
 
         {error && (
           <div className="mb-5 p-3 rounded-none bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-xs border border-red-200 dark:border-red-900/60 font-mono">

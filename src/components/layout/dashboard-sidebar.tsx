@@ -42,10 +42,23 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserName(user.user_metadata?.full_name || 'User');
-        setUserEmail(user.email || '');
+      if (typeof document !== 'undefined' && document.cookie.includes('demo_guest=true')) {
+        setUserName('Guest Operator');
+        setUserEmail('guest@formqr.studio');
+        return;
+      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserName(user.user_metadata?.full_name || 'User');
+          setUserEmail(user.email || '');
+        } else {
+          setUserName('Guest Operator');
+          setUserEmail('guest@formqr.studio');
+        }
+      } catch {
+        setUserName('Guest Operator');
+        setUserEmail('guest@formqr.studio');
       }
     }
     getUser();
@@ -53,11 +66,13 @@ export function DashboardSidebar() {
 
   const handleSignOut = async () => {
     try {
+      document.cookie = 'demo_guest=; path=/; max-age=0';
       await supabase.auth.signOut();
       toast.success('Signed out successfully');
       router.push('/login');
-    } catch (error) {
-      toast.error('Error signing out');
+    } catch {
+      document.cookie = 'demo_guest=; path=/; max-age=0';
+      router.push('/login');
     }
   };
 

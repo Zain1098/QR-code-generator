@@ -23,6 +23,18 @@ export function getValidSupabaseKey(rawKey?: string, defaultFallback = 'placehol
   return rawKey.trim()
 }
 
+export function isSupabaseConfigured(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  return !!(
+    url &&
+    !url.includes('placeholder.supabase.co') &&
+    url.startsWith('http') &&
+    key &&
+    key !== 'placeholder-anon-key'
+  )
+}
+
 export function createClient() {
   const url = getValidSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL)
   const key = getValidSupabaseKey(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)

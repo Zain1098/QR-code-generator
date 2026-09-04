@@ -1,24 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, Sparkles, UserCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [configured, setConfigured] = useState(true);
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams?.get('redirect') || '/dashboard';
 
+  useEffect(() => {
+    setConfigured(isSupabaseConfigured());
+  }, []);
+
+  const handleGuestAccess = () => {
+    document.cookie = 'demo_guest=true; path=/; max-age=86400';
+    toast.success('Workbench access granted in Guest Demo Mode.');
+    router.push(redirectUrl);
+    router.refresh();
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isSupabaseConfigured()) {
+      toast.info('Supabase not connected. Launching Guest Demo workbench...');
+      handleGuestAccess();
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -43,6 +62,12 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
+    if (!isSupabaseConfigured()) {
+      toast.info('Google OAuth requires configured Supabase. Launching Guest Demo...');
+      handleGuestAccess();
+      return;
+    }
+
     setLoading(true);
     setError(null);
     const supabase = createClient();
@@ -79,6 +104,18 @@ export default function LoginPage() {
             Enter authorized credentials to resume studio matrix generation
           </p>
         </div>
+
+        {!configured && (
+          <div className="mb-5 p-3 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-mono">
+            <div className="font-semibold mb-1 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>PORTFOLIO DEMO MODE ACTIVE</span>
+            </div>
+            <p className="font-sans text-[11px] leading-relaxed text-amber-700 dark:text-amber-400">
+              Supabase backend is not configured in Vercel. Click &quot;Enter as Guest&quot; below to explore the complete dashboard and features instantly!
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="mb-5 p-3 rounded-none bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-xs border border-red-200 dark:border-red-900/60 font-mono">
@@ -162,6 +199,15 @@ export default function LoginPage() {
               />
             </svg>
             <span>Continue with Google</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleGuestAccess}
+            className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 rounded-none font-mono text-xs uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 transition-colors font-semibold"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Explore as Guest (Instant Demo)</span>
           </button>
         </div>
 
