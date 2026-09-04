@@ -2,22 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogOut, LayoutDashboard, Sparkles } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setAuthLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setAuthLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      setUser(null);
+      toast.success('Signed out successfully.');
+      closeMobileMenu();
+      router.push('/login');
+      router.refresh();
+    } catch {
+      toast.error('Failed to sign out.');
+    }
   };
 
   const navLinks = [
@@ -65,7 +101,7 @@ export default function Header() {
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Tactile LT / DK segmented theme toggle */}
             <div className="flex items-center bg-print-bed dark:bg-dark-panel p-0.5 rounded border border-border-hairpin dark:border-dark-border">
               <button
@@ -96,14 +132,48 @@ export default function Header() {
 
             <div className="h-4 w-hairpin bg-border-hairpin dark:bg-dark-border hidden sm:block"></div>
 
-            {/* Auth / Studio Entry Link */}
-            <Link
-              href="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface hover:bg-print-bed dark:hover:bg-dark-panel border border-border-hairpin dark:border-dark-border rounded shadow-sm transition-colors"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Studio Log</span>
-            </Link>
+            {/* Dynamic Auth Section */}
+            {!authLoading && (
+              <>
+                {user ? (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface hover:bg-print-bed dark:hover:bg-dark-panel border border-border-hairpin dark:border-dark-border rounded shadow-sm transition-colors"
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5" />
+                      <span>Dashboard</span>
+                    </Link>
+
+                    <button
+                      onClick={handleSignOut}
+                      title={`Sign Out (${user.email})`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted hover:text-red-600 dark:hover:text-red-400 bg-surface-workbench dark:bg-dark-surface hover:bg-red-50 dark:hover:bg-red-950/20 border border-border-hairpin dark:border-dark-border rounded transition-colors"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span className="hidden lg:inline">Sign Out</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface hover:bg-print-bed dark:hover:bg-dark-panel border border-border-hairpin dark:border-dark-border rounded shadow-sm transition-colors"
+                    >
+                      <User className="w-3.5 h-3.5" />
+                      <span>Log In</span>
+                    </Link>
+
+                    <Link
+                      href="/signup"
+                      className="hidden lg:inline-flex items-center gap-1 px-3 py-1.5 text-xs font-mono uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary border border-border-hairpin dark:border-dark-border rounded transition-colors"
+                    >
+                      <span>Sign Up</span>
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
 
             <Link
               href="/create"
@@ -131,7 +201,22 @@ export default function Header() {
       {/* Mobile Menu Panel */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-border-hairpin dark:border-dark-border bg-canvas-paper dark:bg-dark-canvas px-4 py-4 space-y-3">
-          <nav className="flex flex-col space-y-2">
+          {/* User state if logged in */}
+          {user && (
+            <div className="px-3 py-2 bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded flex items-center justify-between">
+              <div className="truncate">
+                <span className="font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted uppercase block">
+                  Active Operator
+                </span>
+                <span className="font-mono text-xs font-semibold text-ink-primary dark:text-dark-ink-primary truncate block">
+                  {user.email}
+                </span>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400"></span>
+            </div>
+          )}
+
+          <nav className="flex flex-col space-y-1.5">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -152,13 +237,41 @@ export default function Header() {
             >
               Open QR Craft Station
             </Link>
-            <Link
-              href="/login"
-              className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded"
-              onClick={closeMobileMenu}
-            >
-              Studio Login / Register
-            </Link>
+
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded"
+                  onClick={closeMobileMenu}
+                >
+                  Workbench Dashboard
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border rounded"
+                  onClick={closeMobileMenu}
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="w-full py-2 text-center text-xs font-mono uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted bg-print-bed dark:bg-dark-panel border border-border-hairpin dark:border-dark-border rounded"
+                  onClick={closeMobileMenu}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
