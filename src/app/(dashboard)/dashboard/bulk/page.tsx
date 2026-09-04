@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import JSZip from 'jszip';
-import { Upload, Download, FileText, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Upload, Download, FileText, CheckCircle2, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatQRData } from '@/features/generator/lib/qr-data-formatters';
 import { getSchemaForType } from '@/features/generator/lib/qr-validators';
@@ -55,7 +55,7 @@ export default function BulkPage() {
       skipEmptyLines: true,
       complete: (results) => {
         const validated: ValidationItem[] = results.data.map((row, index) => {
-          const name = row.name || row.Name || `QR_${index + 1}`;
+          const name = row.name || row.Name || `SPECIMEN_${index + 1}`;
           const type = ((row.type || row.Type || 'url').toLowerCase().trim()) as QRType;
           const rawData = row.data || row.Data || row.url || row.URL || row.text || '';
 
@@ -64,7 +64,7 @@ export default function BulkPage() {
           let error: string | undefined;
 
           if (!rawData) {
-            error = 'Data column is empty';
+            error = 'Data column empty';
           } else {
             try {
               const schema = getSchemaForType(type);
@@ -108,12 +108,12 @@ export default function BulkPage() {
   const invalidCount = validationResults.filter((r) => !r.isValid).length;
 
   const downloadSampleCsv = () => {
-    const csvContent = 'name,type,data\nWebsite URL,url,https://example.com\nStore WiFi,text,Welcome to our cafe\nSupport Hotline,phone,+1234567890\n';
+    const csvContent = 'name,type,data\nWebsite URL,url,https://example.com\nStudio WiFi,text,WIFI:T:WPA;S:StudioGuest;P:Studio2024;;\nSupport Dispatch,phone,+1234567890\n';
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'qr_bulk_sample.csv');
+    link.setAttribute('download', 'matrix_batch_specimen.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -123,7 +123,7 @@ export default function BulkPage() {
   const generateAndDownloadZip = async () => {
     const validItems = validationResults.filter((r) => r.isValid);
     if (validItems.length === 0) {
-      toast.error('No valid rows to generate');
+      toast.error('No valid specimen records to render');
       return;
     }
 
@@ -133,7 +133,7 @@ export default function BulkPage() {
     try {
       const QRCodeStyling = (await import('qr-code-styling')).default;
       const zip = new JSZip();
-      const qrFolder = zip.folder('qr_codes');
+      const qrFolder = zip.folder('matrix_specimens');
 
       for (let i = 0; i < validItems.length; i++) {
         const item = validItems[i];
@@ -157,20 +157,20 @@ export default function BulkPage() {
         setProgress(Math.round(((i + 1) / validItems.length) * 100));
       }
 
-      toast.info('Compressing into ZIP archive...');
+      toast.info('Archiving batch into ZIP package...');
       const zipBlob = await zip.generateAsync({ type: 'blob' });
       const downloadUrl = URL.createObjectURL(zipBlob);
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = `bulk_qr_codes_${Date.now()}.zip`;
+      link.download = `matrix_batch_archive_${Date.now()}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(downloadUrl);
 
-      toast.success(`Successfully generated and downloaded ${validItems.length} QR codes!`);
+      toast.success(`Successfully dispatched ${validItems.length} calibrated matrices to ZIP archive.`);
     } catch (err: any) {
-      toast.error(`Bulk generation failed: ${err.message || 'Unknown error'}`);
+      toast.error(`Batch render failed: ${err.message || 'Unknown error'}`);
     } finally {
       setGenerating(false);
       setProgress(0);
@@ -178,43 +178,58 @@ export default function BulkPage() {
   };
 
   return (
-    <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Bulk QR Code Generation</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Upload a CSV file to generate hundreds of high-resolution QR codes at once and download as a ZIP archive.
-        </p>
+    <div className="space-y-6">
+      {/* Workbench Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b border-border-hairpin dark:border-dark-border">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 inline-block"></span>
+            <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+              HIGH-VOLUME DISPATCH // BATCH ENGINE
+            </span>
+          </div>
+          <h1 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight text-ink-primary dark:text-dark-ink-primary">
+            Bulk Batch Matrix
+          </h1>
+          <p className="text-xs text-ink-muted dark:text-dark-ink-muted mt-1 font-sans">
+            Ingest structured CSV payloads to batch render industrial-grade vector QR matrices packaged in an archive container.
+          </p>
+        </div>
+
+        <button
+          onClick={downloadSampleCsv}
+          type="button"
+          className="inline-flex items-center gap-2 border border-border-hairpin dark:border-dark-border text-ink-primary dark:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-panel px-4 py-2.5 rounded-none font-mono text-xs uppercase tracking-wider transition-colors"
+        >
+          <Download className="w-3.5 h-3.5 text-ink-muted dark:text-dark-ink-muted" />
+          <span>Specimen CSV Template</span>
+        </button>
       </div>
 
-      {/* CSV Upload Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Upload CSV File</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Required headers: <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">name</code>, <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">data</code> (optional: <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">type</code>)
-            </p>
+      {/* CSV Ingestion Well */}
+      <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-6 rounded-none space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 border-b border-border-hairpin dark:border-dark-border">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted" />
+            <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+              Payload Importer
+            </h2>
           </div>
-          <button
-            onClick={downloadSampleCsv}
-            type="button"
-            className="flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Download Sample CSV
-          </button>
+          <p className="font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+            REQUIRED HEADERS: <code className="bg-print-bed dark:bg-dark-panel px-1.5 py-0.5 border border-border-hairpin dark:border-dark-border">name</code>, <code className="bg-print-bed dark:bg-dark-panel px-1.5 py-0.5 border border-border-hairpin dark:border-dark-border">data</code> (OPTIONAL: <code className="bg-print-bed dark:bg-dark-panel px-1.5 py-0.5 border border-border-hairpin dark:border-dark-border">type</code>)
+          </p>
         </div>
 
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:border-brand-500 dark:hover:border-brand-400 transition-colors bg-gray-50 dark:bg-gray-850"
+          className="border border-dashed border-border-hairpin dark:border-dark-border bg-print-bed/40 dark:bg-dark-panel/40 p-10 flex flex-col items-center justify-center cursor-pointer hover:border-ink-primary dark:hover:border-dark-ink-primary transition-colors text-center"
         >
-          <Upload className="w-8 h-8 text-gray-400 mb-2" />
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {file ? file.name : 'Click to browse or drop CSV here'}
+          <Upload className="w-8 h-8 text-ink-muted dark:text-dark-ink-muted mb-3 opacity-60" />
+          <p className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+            {file ? file.name : 'Select or Drop CSV Data Stream'}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Supports .csv format up to 5MB
+          <p className="font-sans text-xs text-ink-muted dark:text-dark-ink-muted mt-1">
+            Accepts UTF-8 .csv files up to 5MB (Batch limit: 500 specimens)
           </p>
           <input
             ref={fileInputRef}
@@ -226,24 +241,24 @@ export default function BulkPage() {
         </div>
       </div>
 
-      {/* Validation Summary & Progress */}
+      {/* Validation Ledger & Batch Execution */}
       {validationResults.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-6 rounded-none space-y-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border-hairpin dark:border-dark-border">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <span className="w-2 h-2 bg-emerald-600 dark:bg-emerald-400"></span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{validCount}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Valid Rows</p>
+                  <p className="font-mono text-lg font-bold text-ink-primary dark:text-dark-ink-primary">{validCount}</p>
+                  <p className="font-mono text-[10px] uppercase text-ink-muted dark:text-dark-ink-muted">Valid Records</p>
                 </div>
               </div>
               {invalidCount > 0 && (
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="w-2 h-2 bg-red-600 dark:bg-red-400"></span>
                   <div>
-                    <p className="text-sm font-semibold text-red-600 dark:text-red-400">{invalidCount}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Invalid Rows</p>
+                    <p className="font-mono text-lg font-bold text-red-600 dark:text-red-400">{invalidCount}</p>
+                    <p className="font-mono text-[10px] uppercase text-ink-muted dark:text-dark-ink-muted">Rejected Records</p>
                   </div>
                 </div>
               )}
@@ -252,58 +267,59 @@ export default function BulkPage() {
             <button
               onClick={generateAndDownloadZip}
               disabled={generating || validCount === 0}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas px-5 py-2.5 rounded-none font-mono text-xs uppercase tracking-wider font-semibold shadow-sm transition-colors disabled:opacity-50"
             >
               {generating ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Generating ({progress}%)
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Rendering Archive ({progress}%)</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
-                  Generate & Download ZIP ({validCount})
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export Batch Archive ({validCount})</span>
                 </>
               )}
             </button>
           </div>
 
+          {/* Progress Bar */}
           {generating && (
-            <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+            <div className="w-full bg-print-bed dark:bg-dark-panel h-1.5 border border-border-hairpin dark:border-dark-border overflow-hidden">
               <div
-                className="bg-brand-600 h-full transition-all duration-300"
+                className="bg-ink-primary dark:bg-dark-ink-primary h-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
           )}
 
-          {/* Preview Table */}
-          <div className="overflow-x-auto max-h-96 rounded-lg border border-gray-200 dark:border-gray-700">
-            <table className="w-full text-left text-xs text-gray-600 dark:text-gray-300">
-              <thead className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white uppercase font-semibold">
+          {/* Registry Preview Table */}
+          <div className="overflow-x-auto max-h-96 border border-border-hairpin dark:border-dark-border">
+            <table className="w-full text-left font-mono text-xs text-ink-primary dark:text-dark-ink-primary">
+              <thead className="bg-print-bed dark:bg-dark-panel uppercase font-semibold text-[10px] tracking-wider text-ink-muted dark:text-dark-ink-muted border-b border-border-hairpin dark:border-dark-border">
                 <tr>
                   <th className="p-3">#</th>
-                  <th className="p-3">Name</th>
-                  <th className="p-3">Type</th>
-                  <th className="p-3">Data</th>
-                  <th className="p-3">Status</th>
+                  <th className="p-3">Identifier</th>
+                  <th className="p-3">Protocol</th>
+                  <th className="p-3">Payload Value</th>
+                  <th className="p-3 text-right">Verification</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-border-hairpin dark:divide-dark-border bg-canvas-paper/50 dark:bg-dark-canvas/50">
                 {validationResults.map((item) => (
-                  <tr key={item.rowNumber} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                    <td className="p-3 font-mono">{item.rowNumber}</td>
-                    <td className="p-3 font-medium text-gray-900 dark:text-white">{item.name}</td>
-                    <td className="p-3 uppercase">{item.type}</td>
-                    <td className="p-3 truncate max-w-xs">{item.data}</td>
-                    <td className="p-3">
+                  <tr key={item.rowNumber} className="hover:bg-print-bed/40 dark:hover:bg-dark-panel/40 transition-colors">
+                    <td className="p-3 text-ink-muted dark:text-dark-ink-muted">{item.rowNumber}</td>
+                    <td className="p-3 font-semibold">{item.name}</td>
+                    <td className="p-3 uppercase text-[11px] text-ink-muted dark:text-dark-ink-muted">{item.type}</td>
+                    <td className="p-3 truncate max-w-xs text-xs text-ink-muted dark:text-dark-ink-muted">{item.data}</td>
+                    <td className="p-3 text-right">
                       {item.isValid ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> Ready
+                        <span className="font-mono text-[10px] uppercase font-semibold text-emerald-600 dark:text-emerald-400">
+                          CALIBRATED
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
-                          <AlertCircle className="w-3.5 h-3.5" /> {item.error}
+                        <span className="font-mono text-[10px] uppercase font-semibold text-red-600 dark:text-red-400">
+                          {item.error}
                         </span>
                       )}
                     </td>

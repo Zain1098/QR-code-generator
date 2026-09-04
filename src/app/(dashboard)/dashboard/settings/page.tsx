@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Lock, Bell, AlertTriangle } from 'lucide-react';
+import { User, Shield, Lock, AlertTriangle, Check, Terminal } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 
@@ -39,7 +39,7 @@ export default function SettingsPage() {
       });
       
       if (error) throw error;
-      toast.success('Profile updated successfully');
+      toast.success('Operator profile parameters updated.');
     } catch (error: any) {
       toast.error(error.message || 'Error updating profile');
     } finally {
@@ -50,7 +50,7 @@ export default function SettingsPage() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error('Passkey verification mismatch');
       return;
     }
     
@@ -61,7 +61,7 @@ export default function SettingsPage() {
       });
       
       if (error) throw error;
-      toast.success('Password updated successfully');
+      toast.success('Atelier credentials rotated successfully.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -73,91 +73,126 @@ export default function SettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
-      toast.error('Account deletion not available in demo mode');
+    if (confirm('Irreversible Action: Purge operator credentials and all matrix specimens?')) {
+      toast.error('Purge action locked in current demo session');
     }
   };
 
   const tabs = [
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'security', name: 'Security', icon: Shield },
-    { id: 'privacy', name: 'Privacy', icon: Lock },
-    { id: 'account', name: 'Account', icon: AlertTriangle },
+    { id: 'profile', name: 'Profile Spec', icon: User, tag: 'OPERATOR_ID' },
+    { id: 'security', name: 'Security & Keys', icon: Shield, tag: 'AUTH_CREDS' },
+    { id: 'privacy', name: 'Telemetry Privacy', icon: Lock, tag: 'SENSOR_CONFIG' },
+    { id: 'account', name: 'Danger Protocol', icon: AlertTriangle, tag: 'PURGE_LEDGER' },
   ];
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your account preferences and settings.</p>
+    <div className="space-y-6 max-w-5xl">
+      {/* Workbench Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b border-border-hairpin dark:border-dark-border">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 inline-block"></span>
+            <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+              CONFIGURATION ENGINE // WORKSPACE
+            </span>
+          </div>
+          <h1 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight text-ink-primary dark:text-dark-ink-primary">
+            Settings & Control
+          </h1>
+          <p className="text-xs text-ink-muted dark:text-dark-ink-muted mt-1 font-sans">
+            Manage operator identity, security credentials, optical telemetry filters, and system preferences.
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Tabs */}
-        <div className="w-full md:w-64 space-y-1">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Monospace Sidebar Tabs */}
+        <div className="w-full md:w-64 space-y-1.5">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              className={`w-full flex items-center justify-between px-3.5 py-3 border font-mono text-xs uppercase tracking-wider text-left transition-colors rounded-none ${
                 activeTab === tab.id
-                  ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'bg-surface-workbench dark:bg-dark-surface border-ink-primary dark:border-dark-ink-primary text-ink-primary dark:text-dark-ink-primary font-semibold'
+                  : 'border-border-hairpin dark:border-dark-border text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary hover:bg-surface-workbench/50'
               }`}
             >
-              <tab.icon className="w-5 h-5" />
-              {tab.name}
+              <div className="flex items-center gap-2.5">
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.name}</span>
+              </div>
+              <span className="text-[9px] text-ink-muted dark:text-dark-ink-muted opacity-70">
+                {activeTab === tab.id ? 'ACTIVE' : ''}
+              </span>
             </button>
           ))}
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:p-8">
+        {/* Content Panel */}
+        <div className="flex-1 bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-6 sm:p-8 rounded-none">
           
           {activeTab === 'profile' && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Profile Settings</h2>
+            <div className="space-y-6">
+              <div className="pb-4 border-b border-border-hairpin dark:border-dark-border flex justify-between items-center">
+                <div>
+                  <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                    Operator Identity
+                  </h2>
+                  <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans mt-0.5">
+                    Assigned identity parameters for vector dispatch proofs.
+                  </p>
+                </div>
+                <span className="font-mono text-[9px] uppercase border border-border-hairpin dark:border-dark-border px-2 py-0.5 text-ink-muted dark:text-dark-ink-muted">
+                  ID: VERIFIED
+                </span>
+              </div>
               
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Avatar</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-xl">
-                    {userName ? userName.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <button className="px-3 py-1.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    Upload new
-                  </button>
+              <div className="flex items-center gap-4 p-4 border border-border-hairpin dark:border-dark-border bg-print-bed/30 dark:bg-dark-panel/30">
+                <div className="w-14 h-14 bg-ink-primary dark:bg-dark-ink-primary text-white dark:text-dark-canvas font-mono font-bold text-xl flex items-center justify-center border border-border-hairpin dark:border-dark-border">
+                  {userName ? userName.charAt(0).toUpperCase() : 'O'}
+                </div>
+                <div>
+                  <p className="font-mono text-xs font-semibold text-ink-primary dark:text-dark-ink-primary uppercase">
+                    {userName || 'Operator Session'}
+                  </p>
+                  <p className="font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+                    {userEmail || 'Active Workspace Session'}
+                  </p>
                 </div>
               </div>
 
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+                    Operator Full Name
+                  </label>
                   <input
                     type="text"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+                    Primary Ledger Email (Read-Only)
+                  </label>
                   <input
                     type="email"
                     value={userEmail}
                     readOnly
                     disabled
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-800 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                    className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-print-bed/50 dark:bg-dark-panel/50 text-ink-muted dark:text-dark-ink-muted font-mono text-xs cursor-not-allowed"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Email address cannot be changed.</p>
                 </div>
-                <div className="pt-4">
+                <div className="pt-3">
                   <button
                     type="submit"
                     disabled={isUpdating}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="px-5 py-2.5 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas rounded-none font-mono text-xs uppercase tracking-wider font-semibold transition-colors disabled:opacity-50"
                   >
-                    {isUpdating ? 'Saving...' : 'Save Changes'}
+                    {isUpdating ? 'Committing Changes...' : 'Save Parameters'}
                   </button>
                 </div>
               </form>
@@ -165,44 +200,57 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'security' && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Security Settings</h2>
+            <div className="space-y-6">
+              <div className="pb-4 border-b border-border-hairpin dark:border-dark-border">
+                <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                  Security Passkeys
+                </h2>
+                <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans mt-0.5">
+                  Rotate your atelier access credentials and cryptographic keys.
+                </p>
+              </div>
               
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+                    Current Authentication Key
+                  </label>
                   <input
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+                    New Passkey
+                  </label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+                  <label className="block font-mono text-[10px] uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+                    Confirm New Passkey
+                  </label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 border border-border-hairpin dark:border-dark-border rounded-none bg-canvas-paper dark:bg-dark-canvas text-ink-primary dark:text-dark-ink-primary font-mono text-xs focus:ring-1 focus:ring-ink-primary dark:focus:ring-dark-ink-primary outline-none"
                   />
                 </div>
-                <div className="pt-4">
+                <div className="pt-3">
                   <button
                     type="submit"
                     disabled={isUpdating || !newPassword}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="px-5 py-2.5 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas rounded-none font-mono text-xs uppercase tracking-wider font-semibold transition-colors disabled:opacity-50"
                   >
-                    {isUpdating ? 'Updating...' : 'Update Password'}
+                    {isUpdating ? 'Rotating Passkeys...' : 'Commit Passkey Rotation'}
                   </button>
                 </div>
               </form>
@@ -210,49 +258,75 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'privacy' && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Privacy Settings</h2>
+            <div className="space-y-6">
+              <div className="pb-4 border-b border-border-hairpin dark:border-dark-border">
+                <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                  Telemetry & Anonymity Filters
+                </h2>
+                <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans mt-0.5">
+                  Configure sensor telemetry collection levels for dynamic matrices.
+                </p>
+              </div>
               
-              <div className="space-y-6">
-                <div className="flex items-start justify-between">
+              <div className="space-y-4">
+                <div className="flex items-start justify-between p-4 border border-border-hairpin dark:border-dark-border bg-print-bed/30 dark:bg-dark-panel/30">
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">Analytics Data Collection</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Collect anonymous usage data when your QR codes are scanned.</p>
+                    <h3 className="font-mono text-xs font-semibold uppercase text-ink-primary dark:text-dark-ink-primary">
+                      Scan Telemetry Indexing
+                    </h3>
+                    <p className="text-xs text-ink-muted dark:text-dark-ink-muted mt-1 font-sans">
+                      Record client decode timestamps and device platform classifications.
+                    </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                  </label>
+                  <input 
+                    type="checkbox" 
+                    defaultChecked 
+                    className="mt-1 h-4 w-4 accent-ink-primary dark:accent-dark-ink-primary rounded-none cursor-pointer"
+                  />
                 </div>
                 
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between p-4 border border-border-hairpin dark:border-dark-border bg-print-bed/30 dark:bg-dark-panel/30">
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">Location Tracking</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Capture coarse location data from users who scan your codes.</p>
+                    <h3 className="font-mono text-xs font-semibold uppercase text-ink-primary dark:text-dark-ink-primary">
+                      Coarse Geolocation Triangulation
+                    </h3>
+                    <p className="text-xs text-ink-muted dark:text-dark-ink-muted mt-1 font-sans">
+                      Capture regional country & city level egress vectors for physical distributions.
+                    </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                  </label>
+                  <input 
+                    type="checkbox" 
+                    defaultChecked 
+                    className="mt-1 h-4 w-4 accent-ink-primary dark:accent-dark-ink-primary rounded-none cursor-pointer"
+                  />
                 </div>
               </div>
             </div>
           )}
 
           {activeTab === 'account' && (
-            <div>
-              <h2 className="text-lg font-semibold text-red-600 mb-6">Danger Zone</h2>
+            <div className="space-y-6">
+              <div className="pb-4 border-b border-border-hairpin dark:border-dark-border">
+                <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                  Danger Protocol: Purge Repository
+                </h2>
+                <p className="text-xs text-ink-muted dark:text-dark-ink-muted font-sans mt-0.5">
+                  Permanently destroy atelier workspace, vector archives, and optical telemetry.
+                </p>
+              </div>
               
-              <div className="border border-red-200 dark:border-red-900/50 rounded-lg p-6 bg-red-50 dark:bg-red-900/10">
-                <h3 className="font-medium text-red-800 dark:text-red-400 mb-2">Delete Account</h3>
-                <p className="text-sm text-red-600 dark:text-red-500 mb-4">
-                  Once you delete your account, there is no going back. Please be certain. All your QR codes, analytics, and data will be permanently erased.
+              <div className="border border-red-300 dark:border-red-900/50 p-6 bg-red-50/50 dark:bg-red-950/20 rounded-none">
+                <h3 className="font-mono text-xs font-bold uppercase text-red-700 dark:text-red-400 mb-2">
+                  Permanent Workspace Dissolution
+                </h3>
+                <p className="text-xs text-ink-muted dark:text-dark-ink-muted mb-4 font-sans leading-relaxed">
+                  Executing this protocol will sever all active dynamic redirect matrices, erase customer scan sensor logs, and revoke operator authorization immediately.
                 </p>
                 <button
                   onClick={handleDeleteAccount}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+                  className="px-4 py-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white dark:border-red-500 dark:text-red-400 dark:hover:bg-red-500 dark:hover:text-black rounded-none font-mono text-xs uppercase tracking-wider font-semibold transition-colors"
                 >
-                  Delete Account
+                  Authorize Workspace Purge
                 </button>
               </div>
             </div>

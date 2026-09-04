@@ -2,57 +2,74 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Edit2, Download, Trash2, Power, Copy, BarChart2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, PlusCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
-export default function QrCodeDetail() {
+export default function QrCodeDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetch
-    const timer = setTimeout(() => setIsLoading(false), 500);
+    const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
   }, [params.id]);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="flex flex-col justify-center items-center h-64 gap-3">
+        <RefreshCw className="w-6 h-6 animate-spin text-ink-muted dark:text-dark-ink-muted" />
+        <span className="font-mono text-xs uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">
+          Querying Matrix Registry...
+        </span>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/qr-codes" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
+      <div className="flex items-center gap-4 pb-5 border-b border-border-hairpin dark:border-dark-border">
+        <Link 
+          href="/dashboard/qr-codes" 
+          className="p-2 border border-border-hairpin dark:border-dark-border hover:bg-surface-workbench dark:hover:bg-dark-surface text-ink-muted hover:text-ink-primary dark:text-dark-ink-muted dark:hover:text-dark-ink-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">QR Code Not Found</h1>
+        <div>
+          <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+            SPECIMEN RECORD // {String(params.id || 'NULL').slice(0, 12)}
+          </span>
+          <h1 className="font-mono text-xl sm:text-2xl font-bold uppercase tracking-tight text-ink-primary dark:text-dark-ink-primary">
+            Matrix Record Status
+          </h1>
+        </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-8 text-center max-w-2xl mx-auto">
-        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Power className="w-8 h-8" />
+      <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-8 sm:p-12 text-center max-w-xl mx-auto rounded-none">
+        <div className="w-14 h-14 bg-print-bed dark:bg-dark-panel border border-border-hairpin dark:border-dark-border flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="w-7 h-7 text-ink-muted dark:text-dark-ink-muted" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">QR Code Not Found</h3>
-        <p className="text-gray-500 dark:text-gray-400 mb-6">
-          The QR code you are looking for doesn't exist or you don't have permission to view it.
+        <div className="font-mono text-[10px] uppercase tracking-widest text-ink-muted dark:text-dark-ink-muted font-semibold mb-1">
+          REGISTRY FAULT: SPECIMEN NOT FOUND
+        </div>
+        <h3 className="font-mono text-base font-bold uppercase text-ink-primary dark:text-dark-ink-primary mb-2">
+          Matrix Index Unreachable
+        </h3>
+        <p className="text-xs text-ink-muted dark:text-dark-ink-muted mb-6 max-w-md mx-auto font-sans leading-relaxed">
+          The requested vector matrix does not exist in your active atelier repository, has expired, or requires elevated authorization.
         </p>
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-3">
           <Link 
             href="/dashboard/qr-codes" 
-            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            className="px-4 py-2.5 border border-border-hairpin dark:border-dark-border text-ink-primary dark:text-dark-ink-primary font-mono text-xs uppercase tracking-wider hover:bg-print-bed dark:hover:bg-dark-panel transition-colors"
           >
-            Back to List
+            Return to Ledger
           </Link>
           <Link 
-            href="/dashboard/create" 
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            href="/create" 
+            className="inline-flex items-center justify-center gap-2 bg-ink-primary hover:bg-black text-white dark:bg-dark-ink-primary dark:hover:bg-white dark:text-dark-canvas px-4 py-2.5 font-mono text-xs uppercase tracking-wider font-semibold transition-colors"
           >
-            Create New QR
+            <PlusCircle className="w-4 h-4" />
+            <span>Craft New Matrix</span>
           </Link>
         </div>
       </div>

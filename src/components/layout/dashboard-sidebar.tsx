@@ -77,27 +77,42 @@ export function DashboardSidebar() {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
-      <div className="p-4 md:p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-            {userName.charAt(0).toUpperCase()}
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{userName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{userEmail}</p>
+    <div className="flex flex-col h-full bg-surface-workbench dark:bg-dark-surface border-r border-border-hairpin dark:border-dark-border transition-colors">
+      {/* Brand Header */}
+      <div className="p-4 md:p-5 border-b border-border-hairpin dark:border-dark-border flex items-center justify-between">
+        <div className="space-y-1">
+          <Link href="/" className="flex items-center gap-2 select-none group">
+            <span className="w-2.5 h-2.5 bg-ink-primary dark:bg-dark-ink-primary rounded-none inline-block transition-transform group-hover:scale-110"></span>
+            <span className="font-mono text-sm font-semibold tracking-wider text-ink-primary dark:text-dark-ink-primary">FORM</span>
+            <span className="text-ink-muted dark:text-dark-ink-muted font-mono text-sm">//</span>
+            <span className="font-mono text-sm tracking-widest text-ink-muted dark:text-dark-ink-muted">QR</span>
+          </Link>
+          <div className="font-mono text-[9px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+            DESK TELEMETRY // WORKSPACE
           </div>
         </div>
         {/* Mobile close button */}
         <button 
-          className="md:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="md:hidden p-1.5 text-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary"
           onClick={() => setIsOpen(false)}
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      {/* Operator Status Pill */}
+      <div className="px-4 py-3 border-b border-border-hairpin dark:border-dark-border bg-canvas-paper/50 dark:bg-dark-panel/40 flex items-center gap-3">
+        <div className="w-7 h-7 bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas flex items-center justify-center font-mono font-bold text-xs">
+          {userName.charAt(0).toUpperCase()}
+        </div>
+        <div className="overflow-hidden flex-1">
+          <p className="text-xs font-mono font-semibold text-ink-primary dark:text-dark-ink-primary truncate">{userName}</p>
+          <p className="text-[10px] font-mono text-ink-muted dark:text-dark-ink-muted truncate">{userEmail}</p>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
           return (
@@ -105,38 +120,39 @@ export function DashboardSidebar() {
               key={item.name}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors rounded-none ${
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas font-semibold shadow-sm'
+                  : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-panel'
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              {item.name}
+              <item.icon className="w-4 h-4 shrink-0" />
+              <span className="truncate">{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-1">
+      {/* Bottom Footer Actions */}
+      <div className="p-3 border-t border-border-hairpin dark:border-dark-border space-y-1 bg-surface-workbench dark:bg-dark-surface">
         <Link
           href="/dashboard/settings"
           onClick={() => setIsOpen(false)}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors rounded-none ${
             pathname.startsWith('/dashboard/settings')
-              ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              ? 'bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas font-semibold'
+              : 'text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary hover:bg-print-bed dark:hover:bg-dark-panel'
           }`}
         >
-          <Settings className="w-5 h-5" />
-          Settings
+          <Settings className="w-4 h-4 shrink-0" />
+          <span>Settings</span>
         </Link>
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 text-xs font-mono uppercase tracking-wider text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors rounded-none"
         >
-          <LogOut className="w-5 h-5" />
-          Sign Out
+          <LogOut className="w-4 h-4 shrink-0" />
+          <span>Sign Out</span>
         </button>
       </div>
     </div>
@@ -145,27 +161,41 @@ export function DashboardSidebar() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-40 flex items-center justify-between px-4">
-        <div className="font-bold text-xl text-indigo-600 dark:text-indigo-400">QR SaaS</div>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-canvas-paper/95 dark:bg-dark-canvas/95 backdrop-blur-md border-b border-border-hairpin dark:border-dark-border z-40 flex items-center justify-between px-4 transition-colors">
+        <Link href="/" className="flex items-center gap-2 select-none">
+          <span className="w-2.5 h-2.5 bg-ink-primary dark:bg-dark-ink-primary rounded-none inline-block"></span>
+          <span className="font-mono text-sm font-semibold tracking-wider text-ink-primary dark:text-dark-ink-primary">FORM</span>
+          <span className="text-ink-muted dark:text-dark-ink-muted font-mono text-sm">//</span>
+          <span className="font-mono text-sm tracking-widest text-ink-muted dark:text-dark-ink-muted">QR</span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/create"
+            className="px-2.5 py-1 text-[11px] font-mono uppercase font-semibold bg-ink-primary text-white dark:bg-dark-ink-primary dark:text-dark-canvas"
+          >
+            Generator
+          </Link>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-1.5 text-ink-muted dark:text-dark-ink-muted hover:text-ink-primary dark:hover:text-dark-ink-primary"
+            aria-label="Toggle Dashboard Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          className="md:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div 
-        className={`fixed top-0 bottom-0 left-0 w-[250px] z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 w-[240px] z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

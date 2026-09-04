@@ -1,92 +1,139 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, BarChart3, Smartphone, Globe, MapPin } from 'lucide-react';
+import { Calendar, BarChart3, Smartphone, Globe, MapPin, Activity, Radio, Cpu, ArrowUpRight } from 'lucide-react';
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState('7d');
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Workbench Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b border-border-hairpin dark:border-dark-border">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Track the performance of all your QR codes.</p>
-        </div>
-        
-        <select 
-          value={dateRange}
-          onChange={(e) => setDateRange(e.target.value)}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="7d">Last 7 Days</option>
-          <option value="30d">Last 30 Days</option>
-          <option value="90d">Last 90 Days</option>
-          <option value="all">All Time</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Total Scans Overview */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:col-span-1">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-              <BarChart3 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Total Scans</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 inline-block"></span>
+            <span className="font-mono text-[10px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+              TELEMETRY LOG // SENSOR SUITE
+            </span>
           </div>
-          <p className="text-4xl font-bold text-gray-900 dark:text-white mb-2">0</p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            <span className="text-green-500 font-medium">0%</span> vs previous period
+          <h1 className="font-mono text-2xl sm:text-3xl font-bold uppercase tracking-tight text-ink-primary dark:text-dark-ink-primary">
+            Scan Analytics
+          </h1>
+          <p className="text-xs text-ink-muted dark:text-dark-ink-muted mt-1 font-sans">
+            Real-time optical decodes, geographical distributions, and client user-agent telemetry.
           </p>
         </div>
+        
+        {/* Date Range Selector */}
+        <div className="flex items-center gap-2 border border-border-hairpin dark:border-dark-border bg-surface-workbench dark:bg-dark-surface p-1">
+          <Calendar className="w-3.5 h-3.5 text-ink-muted dark:text-dark-ink-muted ml-2" />
+          <select 
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value)}
+            className="px-2 py-1.5 bg-transparent text-ink-primary dark:text-dark-ink-primary font-mono text-xs uppercase tracking-wider outline-none cursor-pointer"
+          >
+            <option value="7d" className="bg-surface-workbench dark:bg-dark-surface">Last 7 Days</option>
+            <option value="30d" className="bg-surface-workbench dark:bg-dark-surface">Last 30 Days</option>
+            <option value="90d" className="bg-surface-workbench dark:bg-dark-surface">Last 90 Days</option>
+            <option value="all" className="bg-surface-workbench dark:bg-dark-surface">All Historical Telemetry</option>
+          </select>
+        </div>
+      </div>
 
-        {/* Chart Placeholder */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:col-span-2 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Scans Over Time</h2>
+      {/* Top Overview Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Total Scans Card */}
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-5 lg:col-span-1 rounded-none">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-mono text-[9px] tracking-widest uppercase text-ink-muted dark:text-dark-ink-muted font-semibold">
+              TOTAL DECODES
+            </span>
+            <Radio className="w-4 h-4 text-ink-muted dark:text-dark-ink-muted animate-pulse" />
           </div>
-          <div className="flex-1 min-h-[200px] flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+          <div className="mt-2">
+            <p className="font-mono text-3xl sm:text-4xl font-bold text-ink-primary dark:text-dark-ink-primary">0</p>
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border-hairpin dark:border-dark-border font-mono text-[11px] text-ink-muted dark:text-dark-ink-muted">
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">0.0%</span>
+              <span>DELTA VS PRIOR EPOCH</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart Specimen Frame */}
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-5 lg:col-span-2 flex flex-col rounded-none">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-hairpin dark:border-dark-border">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+              Temporal Distribution (24H Timeline)
+            </span>
+            <span className="font-mono text-[10px] text-ink-muted dark:text-dark-ink-muted">
+              ISO_18004_DECODE
+            </span>
+          </div>
+          <div className="flex-1 min-h-[160px] flex items-center justify-center border border-dashed border-border-hairpin dark:border-dark-border bg-print-bed/40 dark:bg-dark-panel/40 p-6">
             <div className="text-center">
-              <Calendar className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">Not enough data to display chart</p>
+              <Activity className="w-6 h-6 text-ink-muted dark:text-dark-ink-muted mx-auto mb-2 opacity-50" />
+              <p className="font-mono text-xs uppercase tracking-wider text-ink-muted dark:text-dark-ink-muted">
+                Insufficient Decodes to Render Histogram
+              </p>
+              <p className="font-sans text-[11px] text-ink-muted/80 dark:text-dark-ink-muted/80 mt-1">
+                Awaiting client scans from physical matrix deployments.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Devices */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Smartphone className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Devices</h2>
+      {/* Breakdowns Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Device Architectures */}
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-5 rounded-none">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-hairpin dark:border-dark-border">
+            <div className="flex items-center gap-2">
+              <Smartphone className="w-3.5 h-3.5 text-ink-muted dark:text-dark-ink-muted" />
+              <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                Device Platforms
+              </h2>
+            </div>
+            <span className="font-mono text-[9px] text-ink-muted dark:text-dark-ink-muted">HARDWARE</span>
           </div>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="w-32 h-32 rounded-full border-8 border-gray-100 dark:border-gray-800 mb-4"></div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">No device data available</p>
-          </div>
-        </div>
-
-        {/* Browsers */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Globe className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Browsers</h2>
-          </div>
-          <div className="space-y-4">
-            <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-8">No browser data available</p>
+          <div className="flex flex-col items-center justify-center py-8 text-center bg-print-bed/30 dark:bg-dark-panel/30 border border-border-hairpin/60 dark:border-dark-border/60">
+            <Cpu className="w-8 h-8 text-ink-muted dark:text-dark-ink-muted mb-2 opacity-40" />
+            <p className="font-mono text-xs text-ink-muted dark:text-dark-ink-muted uppercase">Zero Client Handshakes</p>
           </div>
         </div>
 
-        {/* Locations */}
-        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:col-span-1 md:col-span-2">
-          <div className="flex items-center gap-3 mb-6">
-            <MapPin className="w-5 h-5 text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Top Locations</h2>
+        {/* Browser Engines */}
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-5 rounded-none">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-hairpin dark:border-dark-border">
+            <div className="flex items-center gap-2">
+              <Globe className="w-3.5 h-3.5 text-ink-muted dark:text-dark-ink-muted" />
+              <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                User Agents
+              </h2>
+            </div>
+            <span className="font-mono text-[9px] text-ink-muted dark:text-dark-ink-muted">CLIENT_SPEC</span>
           </div>
-          <div className="space-y-4">
-            <p className="text-sm text-center text-gray-500 dark:text-gray-400 py-8">No location data available</p>
+          <div className="flex flex-col items-center justify-center py-8 text-center bg-print-bed/30 dark:bg-dark-panel/30 border border-border-hairpin/60 dark:border-dark-border/60">
+            <Globe className="w-8 h-8 text-ink-muted dark:text-dark-ink-muted mb-2 opacity-40" />
+            <p className="font-mono text-xs text-ink-muted dark:text-dark-ink-muted uppercase">No Navigation Recorded</p>
+          </div>
+        </div>
+
+        {/* Geographical Telemetry */}
+        <div className="bg-surface-workbench dark:bg-dark-surface border border-border-hairpin dark:border-dark-border p-5 rounded-none">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-hairpin dark:border-dark-border">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-ink-muted dark:text-dark-ink-muted" />
+              <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-ink-primary dark:text-dark-ink-primary">
+                Coordinates
+              </h2>
+            </div>
+            <span className="font-mono text-[9px] text-ink-muted dark:text-dark-ink-muted">GEO_IP</span>
+          </div>
+          <div className="flex flex-col items-center justify-center py-8 text-center bg-print-bed/30 dark:bg-dark-panel/30 border border-border-hairpin/60 dark:border-dark-border/60">
+            <MapPin className="w-8 h-8 text-ink-muted dark:text-dark-ink-muted mb-2 opacity-40" />
+            <p className="font-mono text-xs text-ink-muted dark:text-dark-ink-muted uppercase">No Ingress Vectors</p>
           </div>
         </div>
       </div>
